@@ -1,23 +1,29 @@
   // Test to check the OpenCV version
   // Build on Linux with:
   
-  #include <opencv2/opencv.hpp>
-  #include <iostream>
-  #include <unistd.h>
-  #include "../Headers/GPIOHandler.hpp"
-
-// LEDs
-const unsigned int LEDGREEN = 60;   // GPIO1_28 = (1x32) + 28 = 60
-const unsigned int LEDYELLOW = 48;  // GPIO1_16 = (1x32) + 16 = 48
-const unsigned int LEDRED = 31;     // GPIO0_31 = (0x32) + 31 = 31
+  #include "../Headers/Main.h"
   
  int main() {
  	
 	GPIOHandler gpiohandler;
-	
+	Grabber grabber;
 
- 	std::cout << "Hello, OpenCV version "<< CV_VERSION << std::endl;	
+	cv::Mat *test_img;
 	
+	gpiohandler.toggleAllLEDs();
+	usleep(2000);
+
+	for(int i = 0; i<5; i++){
+		
+		test_img = grabber.getImage();
+		gpiohandler.toggleLED(LEDRED);
+		}
+
+	imwrite( "Frame.jpg", *test_img);	
+
+	gpiohandler.toggleLED(LEDGREEN);
+	usleep(500000);
+	/*
 	gpiohandler.setLEDHigh(LEDRED);
 	
 	std::cout << "AnalogValue = " << gpiohandler.ReadAnalogIn() << std::endl;
@@ -26,7 +32,7 @@ const unsigned int LEDRED = 31;     // GPIO0_31 = (0x32) + 31 = 31
 	usleep(2000000); 
 	gpiohandler.setLEDHigh(LEDGREEN);
 	usleep(2000000);
-	
+	*/
 
  	return 0;
 }

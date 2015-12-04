@@ -10,6 +10,8 @@ Headers += ${wildcard ./Headers/*.hpp}
 # Compiler
 CXX=g++
 CXXFLAGS = ${foreach d, $(IncludePaths), -I$d} -Wall -Wextra -std=c++11
+CXXFLAGS+=`pkg-config --cflags opencv`
+LDFLAGS+=`pkg-config --libs opencv libv4l2`
 #LDFLAGS = -L/usr/local/lib
 
 # Find binaries

@@ -15,7 +15,7 @@
 #define SLEEP_TIME 10000
 
 /** GPIOHandler()
- *  \brief Constructor of GPIOHandler
+ *  \brief Constructor of GPIOHandler, GPIO pins are high on startup
  */
 GPIOHandler::GPIOHandler()
 {
@@ -26,6 +26,11 @@ GPIOHandler::GPIOHandler()
   	gpio_set_dir(LEDGREEN_GPIO, OUTPUT_PIN);
   	gpio_set_dir(LEDYELLOW_GPIO, OUTPUT_PIN);
   	gpio_set_dir(LEDRED_GPIO, OUTPUT_PIN);
+
+	bLEDGREEN = TRUE;	
+	bLEDYELLOW = TRUE;	
+	bLEDRED = TRUE;
+
 }
 
 /** ~GPIOHandler()
@@ -51,94 +56,137 @@ int GPIOHandler::ReadAnalogIn()
 
 	return AnalogValue; 
 }
-/** setLEDLow()
- *  \brief Set led low
+
+/************************************* Set *************************************/
+
+/** setAllLEDsHigh()
+ *  \brief Set all LED's high
  */
-void GPIOHandler::setLEDLow(int LEDColor){
+void GPIOHandler::setAllLEDsHigh(){
+
+	gpio_set_value(LEDGREEN_GPIO, HIGH);
+	gpio_set_value(LEDYELLOW_GPIO, HIGH);
+	gpio_set_value(LEDRED_GPIO, HIGH);
+
+	bLEDGREEN = TRUE;	
+	bLEDYELLOW = TRUE;	
+	bLEDRED = TRUE;
+}
+
+/** setAllLEDsLow()
+ *  \brief Set all LED's low
+ */
+void GPIOHandler::setAllLEDsLow(){
+
+	gpio_set_value(LEDGREEN_GPIO, LOW);
+	gpio_set_value(LEDYELLOW_GPIO, LOW);
+	gpio_set_value(LEDRED_GPIO, LOW);
+
+	bLEDGREEN = FALSE;	
+	bLEDYELLOW = FALSE;	
+	bLEDRED = FALSE;
+}
+
+/** setLEDLow()
+ *  \brief Set LED low
+ *  \arg int LEDColor
+ */
+void GPIOHandler::setLEDLow(unsigned int LEDColor){
 
 	gpio_set_value(LEDColor, LOW);
-
+	if(LEDColor == LEDGREEN_GPIO){		bLEDGREEN = FALSE;}
+	else if(LEDColor == LEDYELLOW_GPIO){	bLEDYELLOW = FALSE;}
+	else if(LEDColor == LEDRED_GPIO){	bLEDRED = FALSE;}
 }
 
 /** setLEDHigh()
  *  \brief Set led high
+ *  \arg int LEDColor
  */
-void GPIOHandler::setLEDHigh(int LEDColor){
+void GPIOHandler::setLEDHigh(unsigned int LEDColor){
 
 	gpio_set_value(LEDColor, HIGH);
+	if(LEDColor == LEDGREEN_GPIO){		bLEDGREEN = TRUE;}
+	else if(LEDColor == LEDYELLOW_GPIO){	bLEDYELLOW = TRUE;}
+	else if(LEDColor == LEDRED_GPIO){	bLEDRED = TRUE;}
+}
+
+/********************************** End Set ***********************************/
+
+/*********************************** Toggle ***********************************/
+
+/** toggleAllLEDs()
+ *  \brief toggle all LED's
+ */
+void GPIOHandler::toggleAllLEDs(){	
+
+	if(bLEDGREEN == TRUE){ 
+		bLEDGREEN = FALSE; 
+		gpio_set_value(LEDGREEN_GPIO, LOW);
+	}
+	else{
+		bLEDGREEN = TRUE; 
+		gpio_set_value(LEDGREEN_GPIO, HIGH);
+	}
+
+	if(bLEDYELLOW == TRUE){ 
+		bLEDYELLOW = FALSE; 
+		gpio_set_value(LEDYELLOW_GPIO, LOW);
+	}
+	else{
+		bLEDYELLOW = TRUE; 
+		gpio_set_value(LEDYELLOW_GPIO, HIGH);
+	}
+
+	if(bLEDRED == TRUE){ 
+		bLEDRED = FALSE; 
+		gpio_set_value(LEDRED_GPIO, LOW);
+	}
+	else{
+		bLEDRED = TRUE; 
+		gpio_set_value(LEDRED_GPIO, HIGH);
+	}
+}
+
+/** toggleLED()
+ *  \brief toggle LED
+ *  \arg int LEDColor
+ */
+void GPIOHandler::toggleLED(unsigned int LEDColor){
+	if(LEDColor == LEDGREEN_GPIO){
+		if(bLEDGREEN == TRUE){ 
+			bLEDGREEN = FALSE; 
+			gpio_set_value(LEDGREEN_GPIO, LOW);
+		}
+		else{
+			bLEDGREEN = TRUE; 
+			gpio_set_value(LEDGREEN_GPIO, HIGH);
+		}
+	}
+
+	if(LEDColor == LEDYELLOW_GPIO){
+		if(bLEDYELLOW == TRUE){ 
+			bLEDYELLOW = FALSE; 
+			gpio_set_value(LEDYELLOW_GPIO, LOW);
+		}
+		else{
+			bLEDYELLOW = TRUE; 
+			gpio_set_value(LEDYELLOW_GPIO, HIGH);
+		}
+	}
+
+	if(LEDColor == LEDRED_GPIO){
+		if(bLEDRED == TRUE){ 
+			bLEDRED = FALSE; 
+			gpio_set_value(LEDRED_GPIO, LOW);
+		}
+		else{
+			bLEDRED = TRUE; 
+			gpio_set_value(LEDRED_GPIO, HIGH);
+		}
+	}
 
 }
 
+/******************************** End Toggle *********************************/
 
-
-
-
-
-
-/*
-int readOut(std::istream& inStr)
-{
-  int retVal;
-  inStr >> retVal;
-  return retVal;
-}
-
-int main(int argc, char* argv[])
-{
-  // ncurses
-  initscr();
-  cbreak();
-  noecho();
-
-  std::ostringstream buff;
-
-  int avgAIN3[BUFF_SIZE] = {0};
-  int avgAIN5[BUFF_SIZE] = {0};
-
-  int idx = 0;
-
-  while (true)
-  {
-    try
-    {
-      if (++idx == BUFF_SIZE)
-      {
-        idx = 0;
-      }
-
-      std::ifstream AIN3 ("/sys/devices/ocp.3/helper.15/AIN3");
-      std::ifstream AIN5 ("/sys/devices/ocp.3/helper.15/AIN5");
-
-      avgAIN3[idx] = readOut(AIN3);
-      avgAIN5[idx] = readOut(AIN5);
-      int avg3 = 0;
-      int avg5 = 0;
-      for (std::size_t i = 0; i < BUFF_SIZE; ++i)
-      {
-        avg3 += avgAIN3[i];
-        avg5 += avgAIN5[i];
-      }
-      avg3 /= BUFF_SIZE;
-      avg5 /= BUFF_SIZE;
-
-      buff.str("");
-      buff.clear();
-      buff << "AIN3 = " << std::setw(5) << avg3 << '\n';
-      mvaddstr(1, 1, buff.str().c_str());
-      buff.str("");
-      buff.clear();
-      buff << "AIN5 = " << std::setw(5) << avg5 << '\n';
-      mvaddstr(2, 1, buff.str().c_str());
-      usleep(SLEEP_TIME);
-      refresh();
-    }
-    catch (...)
-    {
-      //std::cout << "\n\n";:
-      usleep(SLEEP_TIME);
-    }
-  }
-  endwin();
-
-  return 0;
-}*/

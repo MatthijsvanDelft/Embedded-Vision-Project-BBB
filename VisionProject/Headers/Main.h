@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "../Headers/GPIOHandler.hpp"
 #include "../Headers/Grabber.hpp"
+#include "../Headers/dip.h"
 
 // LEDs
 const unsigned int LEDGREEN = 60;   // GPIO1_28 = (1x32) + 28 = 60

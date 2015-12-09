@@ -9,8 +9,9 @@ Headers += ${wildcard ./Headers/*.hpp}
 
 # Compiler
 CXX=g++
-CXXFLAGS = ${foreach d, $(IncludePaths), -I$d} -Wall -Wextra -std=c++11
+CXXFLAGS = ${foreach d, $(IncludePaths), -I$d} -Wall -Wextra -std=c++11 -pthread -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_{1,2,4}
 CXXFLAGS+=`pkg-config --cflags opencv`
+CXXFLAGS+=  -D_GLIBCXX_USE_NANOSLEEP
 LDFLAGS+=`pkg-config --libs opencv libv4l2`
 #LDFLAGS = -L/usr/local/lib
 

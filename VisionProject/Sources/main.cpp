@@ -1,14 +1,23 @@
-  // Test to check the OpenCV version
-  // Build on Linux with:
+// Main program Embedded Vision Project
+// Created by Matthijs van Delft & Mike van Eerd
   
   #include "../Headers/Main.h"
+  #include "../Headers/handler.h"
   
  int main() {
  	
-	GPIOHandler gpiohandler;
-	Grabber grabber;
-	DIP dip;
+	Handler handler;
 
+    	try{
+     	   handler.start();
+
+   	}
+    	catch(std::exception& e)
+    	{
+        	std::cerr << "Type: " << typeid(e).name() << "\tException: " << e.what() << std::endl;
+    	}
+
+/*
 	cv::Mat *test_img;
 	cv::Mat gray_img;
 
@@ -30,17 +39,7 @@
 	imwrite( "Frame.jpg", gray_img);	
 
 	gpiohandler.toggleLED(LEDGREEN);
-	usleep(500000);
-	/*
-	gpiohandler.setLEDHigh(LEDRED);
-	
-	std::cout << "AnalogValue = " << gpiohandler.ReadAnalogIn() << std::endl;
-	usleep(2000000); 
-	gpiohandler.setLEDHigh(LEDYELLOW);
-	usleep(2000000); 
-	gpiohandler.setLEDHigh(LEDGREEN);
-	usleep(2000000);
-	*/
+*/
 
  	return 0;
 }

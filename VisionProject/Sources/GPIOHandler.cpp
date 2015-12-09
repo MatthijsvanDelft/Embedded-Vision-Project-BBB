@@ -27,6 +27,9 @@ GPIOHandler::GPIOHandler()
   	gpio_set_dir(LEDYELLOW_GPIO, OUTPUT_PIN);
   	gpio_set_dir(LEDRED_GPIO, OUTPUT_PIN);
 
+	gpio_export(Button1_GPIO); gpio_set_dir(Button1_GPIO, INPUT_PIN);
+	gpio_export(Button2_GPIO); gpio_set_dir(Button2_GPIO, INPUT_PIN);
+
 	bLEDGREEN = TRUE;	
 	bLEDYELLOW = TRUE;	
 	bLEDRED = TRUE;
@@ -189,4 +192,23 @@ void GPIOHandler::toggleLED(unsigned int LEDColor){
 }
 
 /******************************** End Toggle *********************************/
+
+/** readBtns()
+ *  \brief readBtns returns 0 if btns were not pushed, else it will return the number from the btn which is pushed.
+ */
+int GPIOHandler::readBtns(){
+	unsigned int BtnOnePushed = 0;
+	unsigned int BtnTwoPushed = 0;
+
+	gpio_get_value(Button1_GPIO, &BtnOnePushed);
+	gpio_get_value(Button2_GPIO, &BtnTwoPushed);
+
+	if(BtnOnePushed!= 0){ 	return 1; }
+	if(BtnTwoPushed!= 0){ 	return 2; }
+	else{		 	return 0;}
+}
+
+
+
+
 

@@ -9,6 +9,7 @@
 #include "dip.h"
 #include "Main.h"
 #include "testbench.h"
+#include "classifier.h"
 
 #define ROUTINE_THREAD_DELAY_MS 0 //500
 #define GPIO_THREAD_DELAY_MS 120
@@ -23,6 +24,8 @@ public:
 	
 	cv::Mat *test_img;
 	cv::Mat gray_img;
+	cv::Mat track_img;
+	cv::Mat finish_img;
 
 private:
     bool routineThreadActive;
@@ -41,6 +44,7 @@ private:
     Grabber grabber;
     DIP dip;
     Testbench testbench;
+    Classifier classifier;
 
     void routine();
     void readGpio();

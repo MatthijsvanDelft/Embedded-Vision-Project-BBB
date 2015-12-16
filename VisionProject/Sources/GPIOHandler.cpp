@@ -29,6 +29,7 @@ GPIOHandler::GPIOHandler()
 
 	gpio_export(Button1_GPIO); gpio_set_dir(Button1_GPIO, INPUT_PIN);
 	gpio_export(Button2_GPIO); gpio_set_dir(Button2_GPIO, INPUT_PIN);
+	gpio_export(Button3_GPIO); gpio_set_dir(Button3_GPIO, INPUT_PIN);
 
 	bLEDGREEN = TRUE;	
 	bLEDYELLOW = TRUE;	
@@ -199,13 +200,16 @@ void GPIOHandler::toggleLED(unsigned int LEDColor){
 int GPIOHandler::readBtns(){
 	unsigned int BtnOnePushed = 0;
 	unsigned int BtnTwoPushed = 0;
+	unsigned int BtnThreePushed = 0;
 
 	gpio_get_value(Button1_GPIO, &BtnOnePushed);
 	gpio_get_value(Button2_GPIO, &BtnTwoPushed);
+	gpio_get_value(Button3_GPIO, &BtnThreePushed);
 
-	if(BtnOnePushed!= 0){ 	return 1; }
-	if(BtnTwoPushed!= 0){ 	return 2; }
-	else{		 	return 0;}
+	if(BtnOnePushed!= 0){ 		return 1; }
+	else if(BtnTwoPushed!= 0){ 	return 2; }
+	else if(BtnThreePushed!= 0){ 	return 3; }
+	else{		 		return 0;}
 }
 
 

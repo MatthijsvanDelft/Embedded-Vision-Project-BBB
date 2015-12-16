@@ -6,7 +6,7 @@
  */
 Grabber::Grabber()
 {
-	mImage.create(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3);
+	mImage.create(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC1);
 
 	init_mmap();
 	std::cout << "Init mmap done" << std::endl;
@@ -60,19 +60,14 @@ void Grabber::readImage()
 		
 	///Set pointer to pixel channel in buffer
 
-	uint8_t *pDataR = (uint8_t *)pBuffers[buf.index].start;
-	uint8_t *pDataG = (uint8_t *)pBuffers[buf.index].start+1;
-	uint8_t *pDataB = (uint8_t *)pBuffers[buf.index].start+2;
+	uint8_t *pDataGrayscaleValue = (uint8_t *)pBuffers[buf.index].start;
+	
+	///put pixels in cv::mat, because the V4L2_PIX_FMT_YUYV format is used we only want the "Y" value. So pointer to the value has a sommation of the value 2
+	for(int y = 0; y < mImage.rows; y++ ){
+   		for(int x = 0; x < mImage.cols ; x++ ){
+		mImage.at<uchar>(y,x) = *pDataGrayscaleValue;
 
-	///Set pixelValue in cv::Mat
-		
-	for( int y = 0; y < mImage.rows; y++ ){
-   		for( int x = 0; x < mImage.cols ; x++ ){
-		mImage.at<cv::Vec3b>(y,x)[2] = *pDataR;
-		mImage.at<cv::Vec3b>(y,x)[1] = *pDataG;
-		mImage.at<cv::Vec3b>(y,x)[0] = *pDataB;
-
-		pDataR+=3; pDataG+=3; pDataB+=3;
+		pDataGrayscaleValue+=2; 
       		}
     	}
 	xioctl(fd, VIDIOC_QBUF, &buf);	//Reset buffer 
@@ -113,19 +108,20 @@ int Grabber::init_mmap()
         fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         fmt.fmt.pix.width       = FRAME_WIDTH;
         fmt.fmt.pix.height      = FRAME_HEIGHT;
-        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
         fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
         xioctl(fd, VIDIOC_S_FMT, &fmt);
-        if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB24) {
-                printf("Libv4l didn't accept RGB24 format. Can't proceed.\n");
+        if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_YUYV ) {
+                printf("Libv4l didn't accept grey format. Can't proceed.\n");
                 exit(EXIT_FAILURE);
         }
+	/*
         if ((fmt.fmt.pix.width != 640) || (fmt.fmt.pix.height != 480))
                 printf("Warning: driver is sending image at %dx%d\n",
                         fmt.fmt.pix.width, fmt.fmt.pix.height);
-
+	*/
         CLEAR(req);
-        req.count = 2;
+        req.count = 1;
         req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         req.memory = V4L2_MEMORY_MMAP;
         xioctl(fd, VIDIOC_REQBUFS, &req);

@@ -33,7 +33,7 @@ void Testbench::displayElapsedTime(string msg)
 
     /// Scales time in ns to ms and prints to standart out.
     ss << "Message: " << msg << "\tPassed time: " << duration.count()*MILLI_SCALEFACTOR << "ms";
-    cout << "test" << ss.str() << endl;
+    cout << ss.str() << endl;
 }
 
 /**

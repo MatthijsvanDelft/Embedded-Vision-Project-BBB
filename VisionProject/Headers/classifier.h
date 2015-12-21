@@ -16,11 +16,19 @@ typedef struct blobinfo_t
     uint16_t mostLowerPixel = 0;
     uint16_t mostLeftPixel = 0;
     uint16_t mostRightPixel = 0;
+    uint32_t sumX = 0;
+    uint32_t sumY = 0;
     uint16_t height = 0;
     uint16_t width = 0;
     uint16_t nof_pixels = 0;
+    uint16_t xCentroid = 0;
+    uint16_t yCentroid = 0;
     float perimeter = 0;
     float formFactor = 0;
+    uint32_t U00 = 0;
+    float N20 = 0;
+    float N02 = 0;
+    float invarianceMoment1 = 0;
 
 }blobinfo_t;
 
@@ -38,6 +46,7 @@ public:
 private:
     uint32_t labelBlobs(cv::Mat * src, cv::Mat * dst, uint8_t connected);
     void blobAnalyse(cv::Mat * im, const uint8_t nrBlobs);
+    void normalizedCentralMoments(cv::Mat *img, const uint8_t blobcount);
     void setSelected(cv::Mat *src, cv::Mat *dst, uint8_t selected, uint8_t value);
     uint8_t neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value, uint8_t connected);
     uint8_t neighboursLowest(cv::Mat *img, uint16_t x, uint16_t y, uint8_t connected);

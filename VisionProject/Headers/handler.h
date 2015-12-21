@@ -22,7 +22,6 @@ public:
     void start();
     void stop();
 	
-	cv::Mat *test_img;
 	cv::Mat gray_img;
 	cv::Mat track_img;
 	cv::Mat finish_img;

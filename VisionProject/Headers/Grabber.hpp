@@ -3,8 +3,8 @@
 
 #define BUFF_SIZE 8
 #define SLEEP_TIME 10000
-#define FRAME_WIDTH 640
-#define FRAME_HEIGHT 480
+#define FRAME_WIDTH 320 //640
+#define FRAME_HEIGHT 240 //480
 
 #include "../Headers/Main.h"
 #include<iostream>

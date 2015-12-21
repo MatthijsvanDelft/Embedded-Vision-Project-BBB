@@ -4,7 +4,7 @@ using namespace std;
 
 Handler::Handler() : routineThreadActive(true), gpioThreadActive(true), serialThreadActive(true), raceActive(false)
 {
-
+	
 }
 
 /**
@@ -58,16 +58,18 @@ void Handler::routine()
 		gray_img = *test_img;		
 
 		cv::imwrite( "Images/Gray_Image.png", gray_img );*/
+
 		
 		gray_img = cv::imread("Images/inputMultipleMarkers.png", CV_LOAD_IMAGE_GRAYSCALE);
-	
+		// gray_img = cv::imread("Images/inputMarker.png", CV_LOAD_IMAGE_GRAYSCALE);
+		
 		dip.setSourceImage(&gray_img);
 
 		dip.visionSet3();
 
 		gray_img = *dip.getEnhancedImage();
 
-		//cv::imwrite( "Images/routine.png", gray_img );		
+		cv::imwrite( "Images/routine.png", gray_img );		
 
 		classifier.setSourceImage(&gray_img);
 

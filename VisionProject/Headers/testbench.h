@@ -14,7 +14,7 @@ class Testbench
 public:
     Testbench();
     void restartTimer();
-    void displayElapsedTime(std::string msg);
+    void displayElapsedTime(std::string *msg);
     float getElapsedTime();
 
 private:

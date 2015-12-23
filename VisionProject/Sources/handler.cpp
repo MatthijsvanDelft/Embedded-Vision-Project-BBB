@@ -64,7 +64,9 @@ void Handler::routine()
 			classifier.classifyCars();
 
 			gpiohandler.toggleLED(LEDGREEN);
-			testbench.displayElapsedTime("Routine");
+
+			string message = "Routine";
+			testbench.displayElapsedTime(&message);
 
 			mtxRoutine.unlock();
 		}

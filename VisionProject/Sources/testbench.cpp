@@ -24,15 +24,17 @@ void Testbench::restartTimer()
  * @brief Testbench::displayElapsedTime
  * @param msg
  */
-void Testbench::displayElapsedTime(string msg)
+void Testbench::displayElapsedTime(string *msg)
 {
+    /// set end time.
+    endTime = steady_clock::now();
+
     /// Calculates difference in begin time en time now in ns.
     std::stringstream ss;
-    endTime = steady_clock::now();
     duration = duration_cast<nanoseconds>(endTime - beginTime);
 
     /// Scales time in ns to ms and prints to standart out.
-    ss << "Message: " << msg << "\tPassed time: " << duration.count()*MILLI_SCALEFACTOR << "ms";
+    ss << "Message: " << *msg << "\tPassed time: " << duration.count()*MILLI_SCALEFACTOR << "ms";
     cout << ss.str() << endl;
 }
 

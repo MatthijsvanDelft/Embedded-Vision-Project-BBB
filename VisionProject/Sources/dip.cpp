@@ -36,7 +36,7 @@ void DIP::visionSet2()
 void DIP::visionSet3()
 {
 	threshold(src, &dst, 245, 255);
-	removeBorderBlobs(&dst, &dst, EIGHT);
+	removeBorderBlobs(&dst, &dst, EIGHT);    
 }
 
 /**

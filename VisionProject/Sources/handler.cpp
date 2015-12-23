@@ -16,7 +16,7 @@ void Handler::start()
     determineTrackMask();
     determineFinishMask();
     threadGpio = thread(&Handler::readGpio, this);
-    //threadSerial = thread(&Handler::displayInfo, this);
+    threadSerial = thread(&Handler::displayInfo, this);
     routine();
 }
 
@@ -44,43 +44,32 @@ void Handler::stop()
 void Handler::routine()
 {    
     while(routineThreadActive){
-	if(raceActive){
-		mtxRoutine.lock();
-		//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
-		
-		/*subjectTestbench = "Grabber";
-		
-		testbench.restartTimer();
+		if(raceActive){
+			mtxRoutine.lock();
+			//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
+			// test_img = grabber.getImage();
+			// gray_img = *test_img;		
 
-		test_img = grabber.getImage();
-	 
-		testbench.displayElapsedTime(subjectTestbench);
-		gray_img = *test_img;		
+			testbench.restartTimer();
+			gray_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
 
-		cv::imwrite( "Images/Gray_Image.png", gray_img );*/
+			
+			dip.setSourceImage(&gray_img);
+			dip.visionSet3();
+			gray_img = *dip.getEnhancedImage();
 
-		
-		gray_img = cv::imread("Images/inputMultipleMarkers.png", CV_LOAD_IMAGE_GRAYSCALE);
-		// gray_img = cv::imread("Images/inputMarker.png", CV_LOAD_IMAGE_GRAYSCALE);
-		
-		dip.setSourceImage(&gray_img);
+			// cv::imwrite( "Images/routine.png", gray_img );		
 
-		dip.visionSet3();
+			classifier.setSourceImage(&gray_img);
+			classifier.classifyCars();
 
-		gray_img = *dip.getEnhancedImage();
+			gpiohandler.toggleLED(LEDGREEN);
+			testbench.displayElapsedTime("Routine");
 
-		cv::imwrite( "Images/routine.png", gray_img );		
-
-		classifier.setSourceImage(&gray_img);
-
-		classifier.classifyCars();
-
-		gpiohandler.toggleLED(LEDGREEN);
-
-		mtxRoutine.unlock();
+			mtxRoutine.unlock();
 		}
         this_thread::sleep_for(chrono::milliseconds(ROUTINE_THREAD_DELAY_MS));
-        }
+    }
 }
 
 /**
@@ -90,27 +79,27 @@ void Handler::readGpio()
 {
     while(gpioThreadActive){
         mtxGpio.lock();
-	unsigned int btnIndex = gpiohandler.readBtns();
+		unsigned int btnIndex = gpiohandler.readBtns();
         //cout << "Read GPIO" << "\tthread id:" << this_thread::get_id() << endl;
-	if(btnIndex == 1){
-		cout << "Program paused,   stop capturing frames" << endl;
-		raceActive = false;
-		gpiohandler.setLEDHigh(LEDRED); gpiohandler.setLEDLow(LEDGREEN);
-	}
+		if(btnIndex == 1){
+			cout << "Program paused,   stop capturing frames" << endl;
+			raceActive = false;
+			gpiohandler.setLEDHigh(LEDRED); gpiohandler.setLEDLow(LEDGREEN);
+		}
 
-	else if(btnIndex == 2){
-		cout << "Program started, start capturing frames" << endl;
-		raceActive = true;
-		gpiohandler.setLEDLow(LEDRED); gpiohandler.setLEDHigh(LEDGREEN);
-	}
-	else if(btnIndex == 3){
-		determineTrackMask();
-		determineFinishMask();
-		cout << "New TrackMask & FinishMask is created" << endl;
-	}
-        mtxGpio.unlock();
+		else if(btnIndex == 2){
+			cout << "Program started, start capturing frames" << endl;
+			raceActive = true;
+			gpiohandler.setLEDLow(LEDRED); gpiohandler.setLEDHigh(LEDGREEN);
+		}
+		else if(btnIndex == 3){
+			determineTrackMask();
+			determineFinishMask();
+			cout << "New TrackMask & FinishMask is created" << endl;
+		}
+      	mtxGpio.unlock();
         this_thread::sleep_for(chrono::milliseconds(GPIO_THREAD_DELAY_MS));
-        }
+    }
 }
 
 /**
@@ -120,7 +109,7 @@ void Handler::displayInfo()
 {
     while(serialThreadActive){
         mtxSerial.lock();
-        cout << "Display info" << "\tthread id:" << this_thread::get_id() << endl;
+        // cout << "Display info" << "\tthread id:" << this_thread::get_id() << endl;
         mtxSerial.unlock();
         this_thread::sleep_for(chrono::milliseconds(SERIAL_THREAD_DELAY_MS));
         }
@@ -141,8 +130,6 @@ void Handler::determineTrackMask()
 	track_img = *dip.getEnhancedImage();
 
 	cv::imwrite( "Bineary trackmask.png", track_img);
-	
-
 }
 
 /**

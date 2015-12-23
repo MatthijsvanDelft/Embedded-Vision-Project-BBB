@@ -16,7 +16,6 @@ DIP::DIP()
 void DIP::visionSet1()
 {
 	threshold(src, &dst, 200, 255);
-
 	//setSelected(&dst, &dst, 1, 255);
 }
 
@@ -27,7 +26,6 @@ void DIP::visionSet2()
 {
 	invert(&dst, &dst);
 	//removeBorderBlobs(dst, dst, FOUR);
-
 	contrastStretchFast(&dst, &dst);
 	//setSelected(&dst, &dst, 1, 255);
 }
@@ -38,10 +36,7 @@ void DIP::visionSet2()
 void DIP::visionSet3()
 {
 	threshold(src, &dst, 245, 255);
-	
-	//removeBorderBlobs(&dst, &dst, EIGHT);
-
-	contrastStretchFast(&dst, &dst);
+	removeBorderBlobs(&dst, &dst, EIGHT);
 }
 
 /**
@@ -62,11 +57,11 @@ void DIP::contrastStretchFast(cv::Mat *src, cv::Mat *dst)
     uint8_t lut[256];
 
     /// Reads pixel values and looks for lowest and highest pixel value.
-    while(i > 0){
+    while(i > 0){        
         if(*s < lowestPixel) {lowestPixel = *s;}
         if(*s > highestPixel) {highestPixel = *s;}
-        s++;
-        i--;
+        ++s;
+        --i;
     }
 
     /// Calculates the stretch factor.
@@ -76,7 +71,7 @@ void DIP::contrastStretchFast(cv::Mat *src, cv::Mat *dst)
     i = 0;
     while(i < 256){
         lut[i] = (uint8_t)((i-lowestPixel)*stretchFactor+0.5f+bottom);
-        i++;
+        ++i;
     }
 
     /// Initialize counters.
@@ -87,9 +82,9 @@ void DIP::contrastStretchFast(cv::Mat *src, cv::Mat *dst)
     /// Calulate new image with parameters and stretch factor.
     while(i > 0){
         *d = lut[*s];
-        d++;
-        s++;
-        i--;
+        ++d;
+        ++s;
+        --i;
     }
 }
 
@@ -112,7 +107,7 @@ void DIP::threshold(cv::Mat *src, cv::Mat *dst, uint8_t low, uint8_t high)
     while(i < 256){
         if((i >= low) && (i <= high)) {lut[i] = 1;}
         else {lut[i] = 0;}
-        i++;
+        ++i;
     }
 
     /// Initialize counter.
@@ -121,9 +116,9 @@ void DIP::threshold(cv::Mat *src, cv::Mat *dst, uint8_t low, uint8_t high)
     /// Reads pixel values, if value is between high and low make it 1, else 0.
     while(i > 0){
         *d = lut[*s];
-        d++;
-        s++;
-        i--;
+        ++d;
+        ++s;
+        --i;
     }
 }
 
@@ -144,8 +139,8 @@ void DIP::histogram(cv::Mat *im, uint16_t *hist, uint32_t sum)
     /// Initialize array with zero's.
     while(i < 256){
         *histogram = 0;
-        histogram++;
-        i++;
+        ++histogram;
+        ++i;
     }
 
     histogram = hist;
@@ -155,8 +150,8 @@ void DIP::histogram(cv::Mat *im, uint16_t *hist, uint32_t sum)
     while(i > 0){
         *(histogram + *s) += 1;
         *sumHistogram += *s;
-        s++;
-        i--;
+        ++s;
+        --i;
     }
 }
 
@@ -193,7 +188,7 @@ void DIP::thresholdIsoData(cv::Mat *src, cv::Mat *dst, uint8_t brightness)
             if(i < lowestpixel) {lowestpixel = i;}
             if(i > highestpixel) {highestpixel = i;}
         }
-        i++;
+        ++i;
     }
 
     /// Calculate starting point for 2 means calculation
@@ -216,7 +211,7 @@ void DIP::thresholdIsoData(cv::Mat *src, cv::Mat *dst, uint8_t brightness)
                 meanLeft = meanLeft/nrPixelsLeft;
                 meanRight = meanRight/nrPixelsRight;
             }
-            i++;
+            ++i;
         }
         t1 = (meanLeft+meanRight)/2;
     }
@@ -252,7 +247,7 @@ void DIP::invert(cv::Mat *src, cv::Mat *dst)
     i = 0;
     while(i < 255){
         lut[i] = 255-i;
-        i++;
+        ++i;
     }
 
     /// Initialize counter.
@@ -261,8 +256,8 @@ void DIP::invert(cv::Mat *src, cv::Mat *dst)
     /// Invert each pixel.
     while(i > 0){
         *d = lut[*s];
-        s++;
-        d++;
+        ++s;
+        ++d;
         i--;
     }
 }
@@ -283,8 +278,8 @@ void DIP::setSelected(cv::Mat *src, cv::Mat *dst, uint8_t selected, uint8_t valu
     /// Set selected pixels to value.
     while(i > 0){
         (*s == selected) ? *d = value : *d = *s;
-        s++;
-        d++;
+        ++s;
+        ++d;
         i--;
     }
 }
@@ -308,9 +303,9 @@ void DIP::multiply(cv::Mat *src, cv::Mat *dst)
         else{
             *d = *s * *d;
         }
-        s++;
-        d++;
-        i--;
+        ++s;
+        ++d;
+        --i;
     }
 }
 
@@ -330,7 +325,7 @@ void DIP::removeBorderBlobs(cv::Mat *src, cv::Mat *dst, uint8_t connected) // FO
     register uint32_t connectedPixels = 0;
 
     /// Check for borderblobs on highest and lowest row.
-    for(i=0; i<(uint16_t)src->cols; i++){
+    for(i=0; i<(uint16_t)src->cols; ++i){
         if(src->at<uint8_t>(0, i) == 1){
             dst->at<uint8_t>(0, i) = 2;
         }
@@ -340,7 +335,7 @@ void DIP::removeBorderBlobs(cv::Mat *src, cv::Mat *dst, uint8_t connected) // FO
     }
 
     /// Check for borderblobs on the most left and right colom.
-    for(i=0; i<(uint16_t)src->rows; i++){
+    for(i=0; i<(uint16_t)src->rows; ++i){
         if(src->at<uint8_t>(i, 0) == 1){
             dst->at<uint8_t>(i, 0) = 2;
         }
@@ -352,31 +347,31 @@ void DIP::removeBorderBlobs(cv::Mat *src, cv::Mat *dst, uint8_t connected) // FO
     /// Make every pixel connected to borderblob 2.
     do{
         connectedPixels = 0;
-        for(y=shift; y<src->rows-shift; y++){
-            for(x=shift; x<src->cols-shift; x++){
+        for(y=shift; y<src->rows-shift; ++y){
+            for(x=shift; x<src->cols-shift; ++x){
                 if(dst->at<uint8_t>(y, x) == 1){
                     nrNeighbours = neighbourCount(dst, x, y, 2, connected);
                     if(nrNeighbours > 0){
                         dst->at<uint8_t>(y, x) = 2;
-                        connectedPixels++;
+                        ++connectedPixels;
                     }
                 }
             }
         }
         if(connectedPixels != 0){
-           for(y=src->rows-shift; y>shift; y--){
-               for(x=src->cols-shift; x>shift; x--){
+           for(y=src->rows-shift; y>shift; --y){
+               for(x=src->cols-shift; x>shift; --x){
                    if(dst->at<uint8_t>(y, x) == 1){
                        nrNeighbours = neighbourCount(dst, x, y, 2, connected);
                        if(nrNeighbours > 0){
                            dst->at<uint8_t>(y, x) = 2;
-                           connectedPixels++;
+                           ++connectedPixels;
                        }
                    }
                }
            }
         }
-        shift++;
+        ++shift;
     }
     while(connectedPixels != 0);
 
@@ -400,7 +395,7 @@ void DIP::fillHoles(cv::Mat *src, cv::Mat *dst, uint8_t connected)
     register uint32_t connectedPixels = 0;
 
     /// Check for background on highest and lowest row.
-    for(i=0; i<(uint16_t)src->cols; i++){
+    for(i=0; i<(uint16_t)src->cols; ++i){
         if(src->at<uint8_t>(0, i) == 0){
             dst->at<uint8_t>(0, i) = 2;
         }
@@ -410,7 +405,7 @@ void DIP::fillHoles(cv::Mat *src, cv::Mat *dst, uint8_t connected)
     }
 
     /// Check for background on the most left and right colom.
-    for(i=0; i<(uint16_t)src->rows; i++){
+    for(i=0; i<(uint16_t)src->rows; ++i){
         if(src->at<uint8_t>(i, 0) == 0){
             dst->at<uint8_t>(i, 0) = 2;
         }
@@ -422,31 +417,31 @@ void DIP::fillHoles(cv::Mat *src, cv::Mat *dst, uint8_t connected)
     /// Make every pixel connected to background 2.
     do{
         connectedPixels = 0;
-        for(y=shift; y<src->rows-shift; y++){
-            for(x=shift; x<src->cols-shift; x++){
+        for(y=shift; y<src->rows-shift; ++y){
+            for(x=shift; x<src->cols-shift; ++x){
                 if(dst->at<uint8_t>(y, x) == 0){
                     nrNeighbours = neighbourCount(dst, x, y, 2, connected);
                     if(nrNeighbours > 0){
                         dst->at<uint8_t>(y, x) = 2;
-                        connectedPixels++;
+                        ++connectedPixels;
                     }
                 }
             }
         }
         if(connectedPixels != 0){
-           for(y=src->rows-shift; y>shift; y--){
-               for(x=src->cols-shift; x>shift; x--){
+           for(y=src->rows-shift; y>shift; --y){
+               for(x=src->cols-shift; x>shift; --x){
                    if(dst->at<uint8_t>(y, x) == 0){
                        nrNeighbours = neighbourCount(dst, x, y, 2, connected);
                        if(nrNeighbours > 0){
                            dst->at<uint8_t>(y, x) = 2;
-                           connectedPixels++;
+                           ++connectedPixels;
                        }
                    }
                }
            }
         }
-        shift++;
+        ++shift;
     }
     while(connectedPixels != 0);
 
@@ -469,8 +464,8 @@ void DIP::binaryEdgeDetect(cv::Mat *src, cv::Mat *dst, uint8_t connected)
     register uint8_t neighbourCount = 0;
 
     /// Set a 2 in every pixel that is not connected to the background.
-    for(y=0; y<src->rows; y++){
-        for(x=0; x<src->cols; x++){
+    for(y=0; y<src->rows; ++y){
+        for(x=0; x<src->cols; ++x){
             pixelValue = dst->at<uint8_t>(y, x);
             if(pixelValue != 0){
                 neighbourCount = neighboursEqualOrHigher(src, x, y, 1, connected);
@@ -523,8 +518,8 @@ uint8_t DIP::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value,
     }
 
     /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; yMask++){
-        for(xMask=0; xMask<n; xMask++){
+    for(yMask=0; yMask<n; ++yMask){
+        for(xMask=0; xMask<n; ++xMask){
             if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
 //                cerr << "Out of image." << endl;
             }
@@ -537,7 +532,7 @@ uint8_t DIP::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value,
             else{
                 pixelValue = (mask[yMask][xMask] * img->at<uint8_t>((y+yMask-1), (x+xMask-1)));
                 if(selectedValue == pixelValue){
-                    neighbourCount++;
+                    ++neighbourCount;
                 }
             }
         }
@@ -579,8 +574,8 @@ uint8_t DIP::neighboursEqualOrHigher(cv::Mat *img, uint16_t x, uint16_t y, uint8
     }
 
     /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; yMask++){
-        for(xMask=0; xMask<n; xMask++){
+    for(yMask=0; yMask<n; ++yMask){
+        for(xMask=0; xMask<n; ++xMask){
             if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
 //                QDEBUG("Out of image.");
             }
@@ -593,7 +588,7 @@ uint8_t DIP::neighboursEqualOrHigher(cv::Mat *img, uint16_t x, uint16_t y, uint8
             else{
                 pixelValue = (mask[yMask][xMask] * img->at<uint8_t>((y+yMask-1), (x+xMask-1)));
                 if(pixelValue >= selectedValue){
-                    neighbourCount++;
+                    ++neighbourCount;
                 }
             }
         }

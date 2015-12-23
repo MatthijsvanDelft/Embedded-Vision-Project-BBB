@@ -11,7 +11,7 @@
 #include "testbench.h"
 #include "classifier.h"
 
-#define ROUTINE_THREAD_DELAY_MS 0 //500
+#define ROUTINE_THREAD_DELAY_MS 0
 #define GPIO_THREAD_DELAY_MS 120
 #define SERIAL_THREAD_DELAY_MS 500
 

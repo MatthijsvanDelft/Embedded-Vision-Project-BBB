@@ -27,15 +27,17 @@ void Car::restartLapTimer()
  * @brief Car::displayLapTime
  * @param msg
  */
-void Car::displayLapTime(string msg)
+void Car::displayLapTime(string *msg)
 {
-    /// Calculates difference in begin time en time now in ns.
-    std::stringstream ss;
+    /// Set end time.
     endTime = steady_clock::now();
+
+    /// Calculates difference in begin time en time now in ns.
+    std::stringstream ss;    
     lapDuration = duration_cast<nanoseconds>(endTime - beginTime);
 
     /// Scales time in ns to ms and prints to standart out.
-    ss << "Message: " << msg << "\tPassed time: " << lapDuration.count()*MILLI_SCALEFACTOR << "ms";
+    ss << "Message: " << *msg << "\tPassed time: " << lapDuration.count()*MILLI_SCALEFACTOR << "ms";
     cout << "test" << ss.str() << endl;
 }
 

@@ -24,34 +24,43 @@ void Classifier::classifyCars()
 	for(int i=0; i < (int)nrBlobs; ++i){
         /// CIRCLE	    	
         if((blobVector.at(i).invarianceMoment1 > CIRCLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < CIRCLE_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
             carVector.at(i).setSymbol("Circle");            
             carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);            
         }   
         /// RECTANGLE
         else if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            carVector.at(i).setSymbol("Rectangle");            
+            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
         }
         /// TRIANGLE
         else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            carVector.at(i).setSymbol("Triangle");            
+            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
         }
         /// MOON
         else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            carVector.at(i).setSymbol("Moon");            
+            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
         }
         /// PLUS
         else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            carVector.at(i).setSymbol("Plus");            
+            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
         }
         /// MINUS
         else if((blobVector.at(i).invarianceMoment1 > MINUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MINUS_NCM_MAX)){
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            carVector.at(i).setSymbol("Minus");            
+            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
         }
         /// UNKNOWN
         else{
-            cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
         }
     }
 

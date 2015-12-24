@@ -6,8 +6,6 @@
 #include <string>
 #include <chrono>
 
-#warning ToDo: Rondetijden testen.
-
 /**
  * @brief The coordinates struct
  */
@@ -24,7 +22,7 @@ class Car
 public:
     Car();
     void restartLapTimer();
-    void displayLapTime(std::string msg);
+    void displayLapTime(std::string *msg);
     float getLapTime();
     void setCoordinates(const unsigned int xCoor, const unsigned int yCoor);
     coordinates * getCoordinates();

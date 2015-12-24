@@ -62,10 +62,21 @@ void Handler::routine()
 
 			classifier.setSourceImage(&gray_img);
 			classifier.classifyCars();
+			vector<Car> *carVector = classifier.getCarVector();
+
+			for (int i = 0; i < carVector->size(); ++i)
+			{
+				coordinates *carPosition = carVector->at(i).getCoordinates();
+				cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")" << endl;
+			}
+
+			string message = "Car 1";
+			carVector->at(0).restartLapTimer();
+			carVector->at(0).displayLapTime(&message);
 
 			gpiohandler.toggleLED(LEDGREEN);
 
-			string message = "Routine";
+			message = "Routine";
 			testbench.displayElapsedTime(&message);
 
 			mtxRoutine.unlock();

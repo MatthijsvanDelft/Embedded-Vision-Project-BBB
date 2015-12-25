@@ -9,7 +9,7 @@ using namespace chrono;
 /**
  * @brief Car::Car
  */
-Car::Car()
+Car::Car() : lapDuration(0.0), nrRank(0), nrLaps(0), nrTeam(0), onFinish(true), onTrack(true)
 {
 
 }

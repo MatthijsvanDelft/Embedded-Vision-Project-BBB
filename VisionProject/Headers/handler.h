@@ -21,10 +21,6 @@ public:
     Handler();
     void start();
     void stop();
-	
-	cv::Mat gray_img;
-	cv::Mat track_img;
-	cv::Mat finish_img;
 
 private:
     bool routineThreadActive;
@@ -38,10 +34,16 @@ private:
     std::mutex mtxSerial;
     std::string subjectTestbench;
 
-    //DIP dipRoutine;
+    cv::Mat sample_img;
+    cv::Mat track_img;
+    cv::Mat finish_img;
+    std::vector<Car> *carVector;
+
     GPIOHandler gpiohandler;
     Grabber grabber;
     DIP dip;
+    DIP dipTrackMask;
+    DIP dipFinishMask;
     Testbench testbench;
     Classifier classifier;
 

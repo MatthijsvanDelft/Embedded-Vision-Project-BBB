@@ -48,35 +48,27 @@ void Handler::routine()
 			mtxRoutine.lock();
 			//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
 			// test_img = grabber.getImage();
-			// gray_img = *test_img;		
+			// sample_img = *test_img;		
 
 			testbench.restartTimer();
-			gray_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
+			sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
 
 			
-			dip.setSourceImage(&gray_img);
+			dip.setSourceImage(&sample_img);
 			dip.visionSet3();
-			gray_img = *dip.getEnhancedImage();
+			sample_img = *dip.getEnhancedImage();
 
-			// cv::imwrite( "Images/routine.png", gray_img );		
+			// cv::imwrite( "Images/routine.png", sample_img );		
 
-			classifier.setSourceImage(&gray_img);
+			classifier.setSourceImage(&sample_img);
 			classifier.classifyCars();
-			vector<Car> *carVector = classifier.getCarVector();
+			carVector = classifier.getCarVector();
 
-			for (int i = 0; i < carVector->size(); ++i)
-			{
-				coordinates *carPosition = carVector->at(i).getCoordinates();
-				cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")" << endl;
-			}
-
-			string message = "Car 1";
-			carVector->at(0).restartLapTimer();
-			carVector->at(0).displayLapTime(&message);
+			determineCarStatus();
 
 			gpiohandler.toggleLED(LEDGREEN);
 
-			message = "Routine";
+			string message = "Routine";
 			testbench.displayElapsedTime(&message);
 
 			mtxRoutine.unlock();
@@ -99,7 +91,6 @@ void Handler::readGpio()
 			raceActive = false;
 			gpiohandler.setLEDHigh(LEDRED); gpiohandler.setLEDLow(LEDGREEN);
 		}
-
 		else if(btnIndex == 2){
 			cout << "Program started, start capturing frames" << endl;
 			raceActive = true;
@@ -133,16 +124,13 @@ void Handler::displayInfo()
  */
 void Handler::determineTrackMask()
 {
-	gpiohandler.setLEDHigh(LEDYELLOW);
 	track_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
-	
-	dip.setSourceImage(&track_img);
+	dipTrackMask.setSourceImage(&track_img);
 
-	dip.visionSet1();
+	dipTrackMask.visionSet1();
+	track_img = *dipTrackMask.getEnhancedImage();
 
-	track_img = *dip.getEnhancedImage();
-
-	cv::imwrite( "Bineary trackmask.png", track_img);
+	cv::imwrite("Bineary trackmask.png", track_img);
 }
 
 /**
@@ -150,13 +138,13 @@ void Handler::determineTrackMask()
  */
 void Handler::determineFinishMask()
 {
+	finish_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
+	dipFinishMask.setSourceImage(&finish_img);
 
-	dip.visionSet2();	
+	dipFinishMask.visionSet1();	
+	finish_img = *dipFinishMask.getEnhancedImage();
 
-	finish_img = *dip.getEnhancedImage();
-
-	cv::imwrite( "Bineary finishmask.png", finish_img);
-	gpiohandler.setLEDLow(LEDYELLOW);
+	cv::imwrite("Bineary finishmask.png", finish_img);
 }
 
 /**
@@ -164,7 +152,33 @@ void Handler::determineFinishMask()
  */
 void Handler::determineCarStatus()
 {
+	for (int i = 0; i < carVector->size(); ++i)
+	{
+		coordinates *carPosition = carVector->at(i).getCoordinates();
+		float lapTime = 0;	
 
+		/// Check if car is on the track.
+		if(sample_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) * track_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
+			carVector->at(i).setOnTrack(true);
+		}
+		else{
+			carVector->at(i).setOnTrack(false);
+		}
+
+		/// Check if car is on at the finish.	
+		if(sample_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) * finish_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
+			if(carVector->at(i).getOnFinish() == false){
+				
+				/// Get lap time and restart lap timer for nect lap.
+				lapTime = carVector->at(i).getLapTime();
+				carVector->at(i).restartLapTimer();
+			}
+			carVector->at(i).setOnFinish(true);
+		}
+		else{
+			carVector->at(i).setOnFinish(false);
+		}
+
+		cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "Lap time:" << lapTime << endl;
+	}
 }
-
-

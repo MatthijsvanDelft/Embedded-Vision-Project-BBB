@@ -520,20 +520,15 @@ uint8_t DIP::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value,
     /// Calculate amount of neigbour pixels with value.
     for(yMask=0; yMask<n; ++yMask){
         for(xMask=0; xMask<n; ++xMask){
+            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
             if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-//                cerr << "Out of image." << endl;
+                // cerr << "Out of image." << endl;
             }
             else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-//                cerr << "Out of image." << endl;
+                // cerr << "Out of image." << endl;
             }
-            else if((yMask == 1) && (xMask == 1)){
-//                cerr << "Anchor pixel." << endl;
-            }
-            else{
-                pixelValue = (mask[yMask][xMask] * img->at<uint8_t>((y+yMask-1), (x+xMask-1)));
-                if(selectedValue == pixelValue){
-                    ++neighbourCount;
-                }
+            else if((mask[yMask][xMask]) && (pixelValue == value)){
+                ++neighbourCount;
             }
         }
     }
@@ -576,20 +571,16 @@ uint8_t DIP::neighboursEqualOrHigher(cv::Mat *img, uint16_t x, uint16_t y, uint8
     /// Calculate amount of neigbour pixels with value.
     for(yMask=0; yMask<n; ++yMask){
         for(xMask=0; xMask<n; ++xMask){
+            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+
             if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-//                QDEBUG("Out of image.");
+                // cerr << "Out of image." << endl;
             }
             else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-//                QDEBUG("Out of image.");
+                // cerr << "Out of image." << endl;
             }
-            else if((yMask == 1) && (xMask == 1)){
-//                QDEBUG("Anchor pixel.");
-            }
-            else{
-                pixelValue = (mask[yMask][xMask] * img->at<uint8_t>((y+yMask-1), (x+xMask-1)));
-                if(pixelValue >= selectedValue){
-                    ++neighbourCount;
-                }
+            else if((mask[yMask][xMask]) && (pixelValue >= value)){
+                ++neighbourCount;
             }
         }
     }

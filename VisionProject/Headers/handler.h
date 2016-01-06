@@ -10,6 +10,7 @@
 #include "Main.h"
 #include "testbench.h"
 #include "classifier.h"
+#include "serial.h"
 
 #define ROUTINE_THREAD_DELAY_MS 0
 #define GPIO_THREAD_DELAY_MS 120
@@ -44,6 +45,7 @@ private:
     DIP dip;
     DIP dipTrackMask;
     DIP dipFinishMask;
+    Serial serial;
     Testbench testbench;
     Classifier classifier;
 
@@ -53,6 +55,7 @@ private:
     void determineTrackMask();
     void determineFinishMask();
     void determineCarStatus();
+    void determineCarRanks();
 };
 
 #endif // HANDLER_H

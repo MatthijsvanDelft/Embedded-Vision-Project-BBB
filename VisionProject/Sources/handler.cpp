@@ -89,12 +89,14 @@ void Handler::readGpio()
 		if(btnIndex == 1){
 			cout << "Program paused,   stop capturing frames" << endl;
 			raceActive = false;
-			gpiohandler.setLEDHigh(LEDRED); gpiohandler.setLEDLow(LEDGREEN);
+			gpiohandler.setLEDHigh(LEDRED);
+			gpiohandler.setLEDLow(LEDGREEN);
 		}
 		else if(btnIndex == 2){
 			cout << "Program started, start capturing frames" << endl;
 			raceActive = true;
-			gpiohandler.setLEDLow(LEDRED); gpiohandler.setLEDHigh(LEDGREEN);
+			gpiohandler.setLEDLow(LEDRED); 
+			gpiohandler.setLEDHigh(LEDGREEN);
 		}
 		else if(btnIndex == 3){
 			determineTrackMask();
@@ -114,9 +116,10 @@ void Handler::displayInfo()
     while(serialThreadActive){
         mtxSerial.lock();
         // cout << "Display info" << "\tthread id:" << this_thread::get_id() << endl;
+        serial.send("Test message\r\n");
         mtxSerial.unlock();
         this_thread::sleep_for(chrono::milliseconds(SERIAL_THREAD_DELAY_MS));
-        }
+    }
 }
 
 /**
@@ -163,15 +166,19 @@ void Handler::determineCarStatus()
 		}
 		else{
 			carVector->at(i).setOnTrack(false);
+			carVector->at(i).setDsqStatus(true);
 		}
 
 		/// Check if car is on at the finish.	
 		if(sample_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) * finish_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
 			if(carVector->at(i).getOnFinish() == false){
 				
-				/// Get lap time and restart lap timer for nect lap.
+				/// Get lap time and restart lap timer for next lap.
 				lapTime = carVector->at(i).getLapTime();
 				carVector->at(i).restartLapTimer();
+
+				/// Add a lap.
+				carVector->at(i).setNrLaps(carVector->at(i).getNrLaps() + 1);
 			}
 			carVector->at(i).setOnFinish(true);
 		}
@@ -181,4 +188,13 @@ void Handler::determineCarStatus()
 
 		cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "Lap time:" << lapTime << endl;
 	}
+}
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ */
+void Handler::determineCarRanks()
+{
+
 }

@@ -14,7 +14,7 @@
 
 #define ROUTINE_THREAD_DELAY_MS 0
 #define GPIO_THREAD_DELAY_MS 120
-#define SERIAL_THREAD_DELAY_MS 500
+#define SERIAL_THREAD_DELAY_MS 1000
 
 class Handler
 {
@@ -56,6 +56,7 @@ private:
     void determineFinishMask();
     void determineCarStatus();
     void determineCarRanks();
+    std::string carToJSON(Car *car);
 };
 
 #endif // HANDLER_H

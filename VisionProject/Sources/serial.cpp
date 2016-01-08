@@ -6,9 +6,31 @@ using namespace std;
  * @brief [brief description]
  * @details [long description]
  */
-Serial::Serial() : port("/dev/ttyO1")
+Serial::Serial() : port("/dev/ttyO4")
 {
-	openPort();
+	/// Open file descriptor.
+	fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+
+	/// Check if file descriptor is open.
+	if(fd < 0){
+		cerr << "Serial port " << port << " unable to open." << endl;
+	}
+	else if(fd >= 0){
+		cout << "Serial port " << port << " is open." << endl;
+
+		/// Get current settings for the port.
+		tcgetattr(fd, &settings);
+
+		/// Set input and output baudrate.
+		cfsetispeed(&settings, BAUDRATE);
+		cfsetospeed(&settings, BAUDRATE);
+
+		/// Makes sure that application does not become owner of the port.
+		settings.c_cflag |= (CLOCAL | CREAD);
+
+		/// Set new settings for the port.
+		tcsetattr(fd, TCSANOW, &settings);
+	}
 }
 
 /**
@@ -26,40 +48,16 @@ Serial::~Serial()
  * @brief [brief description]
  * @details [long description]
  * 
- * @param port [description]
- */
-void Serial::openPort()
-{
-	/// Open file descriptor.
-	fd = open(port.c_str(), O_RDWR);
-
-	/// Check if file descriptor is open.
-	if(fd == -1){
-		cerr << "port " << port << " unable to open." << endl;
-	}
-	else if(fd >= 0){
-		cout << "port " << port << " is open." << endl;
-	}
-}
-
-/**
- * @brief [brief description]
- * @details [long description]
- * 
  * @param msg [description]
  */
 void Serial::send(string msg)
 {
-	#warning todo: test serial::receive
 	/// Send string.
 	int err = write(fd, msg.c_str(), msg.size());
 
 	/// Check for errors while sending string.
-	if(err == -1){
+	if(err < 0){
 		cerr << "Unable to write." << endl;
-	}
-	else{
-		cout << "Send message:" << msg << endl;
 	}
 }
 

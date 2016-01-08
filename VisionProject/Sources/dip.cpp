@@ -495,7 +495,6 @@ void DIP::binaryEdgeDetect(cv::Mat *src, cv::Mat *dst, uint8_t connected)
 uint8_t DIP::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value, uint8_t connected)
 {
     /// Doesn't work for counting zeros.
-    register uint8_t selectedValue = value;
     register uint8_t yMask = 0;
     register uint8_t xMask = 0;
     register uint8_t pixelValue = 0;

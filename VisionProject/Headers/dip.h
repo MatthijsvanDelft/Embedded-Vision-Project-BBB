@@ -5,7 +5,6 @@
 #include <string>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "testbench.h"
 
 #define DARK 0
 #define BRIGHT 1
@@ -43,7 +42,6 @@ private:
 
     cv::Mat *src;
     cv::Mat dst;
-    Testbench testbench;
 };
 
 #endif // DIP_H

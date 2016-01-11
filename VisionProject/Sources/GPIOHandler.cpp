@@ -6,10 +6,9 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-
 #include <ncurses.h>
 #include <unistd.h>
-#include "../Headers/GPIOHandler.hpp"
+#include "../Headers/GPIOHandler.h"
 
 #define BUFF_SIZE 8
 #define SLEEP_TIME 10000

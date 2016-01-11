@@ -6,8 +6,7 @@
 #define FRAME_WIDTH 320 //640
 #define FRAME_HEIGHT 240 //480
 
-#include "../Headers/Main.h"
-#include<iostream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +18,7 @@
 #include <sys/mman.h>
 #include <linux/videodev2.h>
 #include <libv4l2.h>
+#include <opencv2/opencv.hpp>
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 

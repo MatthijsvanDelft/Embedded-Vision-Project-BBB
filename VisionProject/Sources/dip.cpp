@@ -548,7 +548,6 @@ uint8_t DIP::neighboursEqualOrHigher(cv::Mat *img, uint16_t x, uint16_t y, uint8
     register uint8_t yMask = 0;
     register uint8_t xMask = 0;
     register uint8_t pixelValue = 0;
-    register uint8_t selectedValue = value;
     register uint8_t neighbourCount = 0;
     register const uint8_t n = 3;
     uint8_t mask[n][n] = {};

@@ -1,4 +1,4 @@
-#include "../Headers/Grabber.hpp"
+#include "../Headers/grabber.h"
 
 
 /** Grabber()
@@ -9,7 +9,7 @@ Grabber::Grabber()
 	mImage.create(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC1);
 
 	init_mmap();
-	std::cout << "Init mmap done" << std::endl;
+	std::cout << "Camera initialised." << std::endl;
 }
 
 /** ~Grabber()

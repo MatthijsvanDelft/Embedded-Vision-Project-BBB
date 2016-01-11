@@ -6,8 +6,10 @@
 #include <thread>
 #include <string>
 #include <mutex>
+#include "GPIOHandler.h"
+#include "grabber.h"
 #include "dip.h"
-#include "Main.h"
+#include "main.h"
 #include "testbench.h"
 #include "classifier.h"
 #include "serial.h"

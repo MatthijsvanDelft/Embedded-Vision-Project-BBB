@@ -1,7 +1,7 @@
 // Main program Embedded Vision Project
 // Created by Matthijs van Delft & Mike van Eerd
   
-  #include "../Headers/Main.h"
+  #include "../Headers/main.h"
   #include "../Headers/handler.h"
   
  int main() {

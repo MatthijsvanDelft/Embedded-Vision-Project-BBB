@@ -47,19 +47,15 @@ void Handler::routine()
 		if(raceActive){
 			mtxRoutine.lock();
 			//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
-
-			// test_img = grabber.getImage();
-			// sample_img = *test_img;		
-
 			testbench.restartTimer();
-			sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
 
+			//sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
+			sample_img = *grabber.getImage();
+			cv::imwrite( "Images/Original.png", sample_img );					
 			
 			dip.setSourceImage(&sample_img);
 			dip.visionSet3();
-			sample_img = *dip.getEnhancedImage();
-
-			// cv::imwrite( "Images/routine.png", sample_img );		
+			sample_img = *dip.getEnhancedImage();		
 
 			classifier.setSourceImage(&sample_img);
 			classifier.classifyCars();
@@ -197,7 +193,7 @@ void Handler::determineCarStatus()
 			carVector->at(i).setOnFinish(false);
 		}
 
-		cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "Lap time:" << lapTime << endl;
+		cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "\tLap time:" << lapTime << endl;
 	}
 }
 
@@ -230,7 +226,6 @@ string Handler::carToJSON(Car *car)
 	ssJsonInfo << "\"laps\":\"" << car->getNrLaps() << "\"," ;
 	ssJsonInfo << "\"coordinate x\":\"" << coors->xCoordinate << "\"," ;
 	ssJsonInfo << "\"coordinate y\":\"" << coors->yCoordinate << "\"," ;
-	ssJsonInfo << "\"lap time\":\"" << car->getLapTime() << "\"," ;
 	ssJsonInfo << "\"lap time\":\"" << car->getLapTime() << "\"," ;
 	ssJsonInfo << "\"on finish\":\"" << car->getOnFinish() << "\"," ;
 	ssJsonInfo << "\"on track\":\"" << car->getOnTrack() << "\"," ;

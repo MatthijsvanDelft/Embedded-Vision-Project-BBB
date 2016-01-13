@@ -51,11 +51,12 @@ void Handler::routine()
 
 			//sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
 			sample_img = *grabber.getImage();
-			cv::imwrite( "Images/Original.png", sample_img );					
+			cv::imwrite("Original.png", sample_img);					
 			
 			dip.setSourceImage(&sample_img);
 			dip.visionSet3();
-			sample_img = *dip.getEnhancedImage();		
+			sample_img = *dip.getEnhancedImage();
+			cv::imwrite("Enhanced.png", sample_img);							
 
 			classifier.setSourceImage(&sample_img);
 			classifier.classifyCars();
@@ -101,7 +102,7 @@ void Handler::readGpio()
 			determineTrackMask();
 			determineFinishMask();
 			gpiohandler.setLEDLow(LEDYELLOW);
-			cout << "New TrackMask & FinishMask is created" << endl;
+			
 		}
       	mtxGpio.unlock();
         this_thread::sleep_for(chrono::milliseconds(GPIO_THREAD_DELAY_MS));
@@ -134,13 +135,15 @@ void Handler::displayInfo()
  */
 void Handler::determineTrackMask()
 {
-	track_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
+	track_img = *grabber.getImage();
+	//track_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
 	dipTrackMask.setSourceImage(&track_img);
 
 	dipTrackMask.visionSet1();
 	track_img = *dipTrackMask.getEnhancedImage();
 
-	cv::imwrite("Bineary trackmask.png", track_img);
+	cv::imwrite("Images/RacetrackMask.png", track_img);
+	//cout << "New TrackMask & FinishMask is created" << endl;
 }
 
 /**
@@ -148,13 +151,13 @@ void Handler::determineTrackMask()
  */
 void Handler::determineFinishMask()
 {
-	finish_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
+	finish_img = cv::imread("Images/RacetrackMask.png", CV_LOAD_IMAGE_GRAYSCALE);
 	dipFinishMask.setSourceImage(&finish_img);
 
-	dipFinishMask.visionSet1();	
+	dipFinishMask.visionSet2();	
 	finish_img = *dipFinishMask.getEnhancedImage();
 
-	cv::imwrite("Bineary finishmask.png", finish_img);
+	cv::imwrite("FinishRacetrack.png", finish_img);
 }
 
 /**

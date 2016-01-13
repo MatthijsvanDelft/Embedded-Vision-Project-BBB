@@ -11,32 +11,34 @@ DIP::DIP()
 }
 
 /**
- * @brief DIP::visionSet1
+ * @brief DIP::visionSet1, this Visionset is used for the TrackMask
  */
 void DIP::visionSet1()
 {
-	threshold(src, &dst, 200, 255);
+    thresholdIsoData(src, &dst, BRIGHT);
+	//threshold(src, &dst, 220, 255);
 	//setSelected(&dst, &dst, 1, 255);
 }
 
 /**
- * @brief DIP::visionSet2
+ * @brief DIP::visionSet2, this Visionset is used for the FinishMask
  */
 void DIP::visionSet2()
 {
-	invert(&dst, &dst);
-	//removeBorderBlobs(dst, dst, FOUR);
-	contrastStretchFast(&dst, &dst);
-	//setSelected(&dst, &dst, 1, 255);
+	invert(src, &dst);
+	removeBorderBlobs(&dst, &dst, FOUR);
+	//contrastStretchFast(&dst, &dst);
+	setSelected(&dst, &dst, 1, 255);
 }
 
 /**
- * @brief DIP::visionSet3
+ * @brief DIP::visionSet3, this Visionset is used for the classification of the cars.
  */
 void DIP::visionSet3()
 {
-	threshold(src, &dst, 245, 255);
-	removeBorderBlobs(&dst, &dst, EIGHT);    
+    thresholdIsoData(src, &dst, BRIGHT);
+	removeBorderBlobs(&dst, &dst, EIGHT);
+    setSelected(&dst, &dst, 1, 255); 
 }
 
 /**

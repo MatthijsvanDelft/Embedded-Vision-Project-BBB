@@ -15,6 +15,7 @@ void Classifier::classifyCars()
 {
     uint8_t nrBlobs = 0;
     nrBlobs = labelBlobs(src, &dst, EIGHT);
+    cout << "Number of found blobs:" << int(nrBlobs) << endl;
 
     /// Resize vector.
     blobVector.resize(nrBlobs);
@@ -22,45 +23,51 @@ void Classifier::classifyCars()
     blobAnalyse(&dst, nrBlobs);
 
 	for(int i=0; i < (int)nrBlobs; ++i){
-        /// CIRCLE	    	
-        if((blobVector.at(i).invarianceMoment1 > CIRCLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < CIRCLE_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Circle");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);            
-        }   
-        /// RECTANGLE
-        else if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Rectangle");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-        }
-        /// TRIANGLE
-        else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Triangle");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-        }
-        /// MOON
-        else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Moon");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-        }
-        /// PLUS
-        else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Plus");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-        }
-        /// MINUS
-        else if((blobVector.at(i).invarianceMoment1 > MINUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MINUS_NCM_MAX)){
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            carVector.at(i).setSymbol("Minus");            
-            carVector.at(i).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-        }
-        /// UNKNOWN
-        else{
-            // cout << "Blob:" << i+1 << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+
+
+
+
+        if (blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB){
+            /// CIRCLE          
+            if((blobVector.at(i).invarianceMoment1 > CIRCLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < CIRCLE_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(0).setSymbol("Circle");            
+                carVector.at(0).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);            
+            }   
+            /// RECTANGLE
+            else if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(1).setSymbol("Rectangle");            
+                carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            }
+            /// TRIANGLE
+            else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(2).setSymbol("Triangle");            
+                carVector.at(2).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            }
+            /// MOON
+            else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(3).setSymbol("Moon");            
+                carVector.at(3).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            }
+            /// PLUS
+            else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(4).setSymbol("Plus");            
+                carVector.at(4).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            }
+            /// MINUS
+            else if((blobVector.at(i).invarianceMoment1 > MINUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MINUS_NCM_MAX)){
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                carVector.at(5).setSymbol("Minus");            
+                carVector.at(5).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
+            }
+            // UNKNOWN
+            else{
+                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            }   
         }
     }
 
@@ -145,7 +152,6 @@ uint32_t Classifier::labelBlobs(cv::Mat * src, cv::Mat * dst, uint8_t connected)
                 }
             }
         }
-
         return blobCount-1;
 }
 

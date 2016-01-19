@@ -15,9 +15,13 @@ DIP::DIP()
  */
 void DIP::visionSet1()
 {
-    thresholdIsoData(src, &dst, BRIGHT);
-	//threshold(src, &dst, 220, 255);
-	//setSelected(&dst, &dst, 1, 255);
+    //thresholdIsoData(src, &dst, BRIGHT);
+    threshold(src, &dst, 160, 255);
+    removeBorderBlobs(&dst, &dst, EIGHT);
+
+    cv::Mat tmpImage = dst;
+    setSelected(&dst, &tmpImage, 1, 255);
+    cv::imwrite("TrackMaskScaled.png", tmpImage);
 }
 
 /**
@@ -25,10 +29,16 @@ void DIP::visionSet1()
  */
 void DIP::visionSet2()
 {
-	invert(src, &dst);
-	removeBorderBlobs(&dst, &dst, FOUR);
-	//contrastStretchFast(&dst, &dst);
-	setSelected(&dst, &dst, 1, 255);
+    
+    invert(src, &dst);
+    threshold(&dst, &dst, 255, 255);
+    // setSelected(&dst, &dst, 254, 0);
+    // setSelected(&dst, &dst, 255, 1);
+    removeBorderBlobs(&dst, &dst, EIGHT);
+
+    cv::Mat tmpImage = dst;
+    setSelected(&dst, &tmpImage, 1, 255);
+    cv::imwrite("FinishMaskScaled.png", tmpImage);
 }
 
 /**
@@ -36,9 +46,10 @@ void DIP::visionSet2()
  */
 void DIP::visionSet3()
 {
-    thresholdIsoData(src, &dst, BRIGHT);
+    //thresholdIsoData(src, &dst, BRIGHT);
+    threshold(src, &dst, 180, 255);
 	removeBorderBlobs(&dst, &dst, EIGHT);
-    setSelected(&dst, &dst, 1, 255); 
+    setSelected(&dst, &dst, 1, 255);
 }
 
 /**
@@ -218,7 +229,8 @@ void DIP::thresholdIsoData(cv::Mat *src, cv::Mat *dst, uint8_t brightness)
         t1 = (meanLeft+meanRight)/2;
     }
 
-	std::cout << "Threshold isodata value: " << (int)t1 << std::endl;
+	// std::cout << "Threshold isodata value: " << (int)t1 << std::endl;
+
     /// Determine threshold values
     if(brightness == DARK){
         low = 0;
@@ -502,37 +514,48 @@ uint8_t DIP::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t value,
     register uint8_t pixelValue = 0;
     register uint8_t neighbourCount = 0;
     register const uint8_t n = 3;
-    uint8_t mask[n][n] = {};
-    uint8_t maskFourConnected[n][n] = {{0, 1, 0},
-                                       {1, 0, 1},
-                                       {0, 1, 0}};
-    uint8_t maskEightConnected[n][n] = {{1, 1, 1},
-                                        {1, 0, 1},
-                                        {1, 1, 1}};
 
-    if(connected == FOUR){
-        memcpy(&mask, &maskFourConnected, sizeof(mask));
+    switch (connected) {
+        case FOUR:
+            /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskFourConnected[yMask][xMask]) && (pixelValue == value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
+            }
+        break;
 
-    }
-    else if(connected == EIGHT){
-        memcpy(&mask, &maskEightConnected, sizeof(mask));
-    }
-
-    /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; ++yMask){
-        for(xMask=0; xMask<n; ++xMask){
-            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
-            if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-                // cerr << "Out of image." << endl;
+        case EIGHT:
+        /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskEightConnected[yMask][xMask]) && (pixelValue == value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
             }
-            else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-                // cerr << "Out of image." << endl;
-            }
-            else if((mask[yMask][xMask]) && (pixelValue == value)){
-                ++neighbourCount;
-            }
-        }
-    }
+        break;
+    } 
     return neighbourCount;
 }
 
@@ -552,38 +575,48 @@ uint8_t DIP::neighboursEqualOrHigher(cv::Mat *img, uint16_t x, uint16_t y, uint8
     register uint8_t pixelValue = 0;
     register uint8_t neighbourCount = 0;
     register const uint8_t n = 3;
-    uint8_t mask[n][n] = {};
-    uint8_t maskFourConnected[n][n] = {{0, 1, 0},
-                                       {1, 0, 1},
-                                       {0, 1, 0}};
-    uint8_t maskEightConnected[n][n] = {{1, 1, 1},
-                                        {1, 0, 1},
-                                        {1, 1, 1}};
-
-    if(connected == FOUR){
-        memcpy(&mask, &maskFourConnected, sizeof(mask));
-
-    }
-    else if(connected == EIGHT){
-        memcpy(&mask, &maskEightConnected, sizeof(mask));
-    }
-
-    /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; ++yMask){
-        for(xMask=0; xMask<n; ++xMask){
-            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
-
-            if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-                // cerr << "Out of image." << endl;
+    
+    switch (connected) {
+        case FOUR:
+            /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskFourConnected[yMask][xMask]) && (pixelValue >= value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
             }
-            else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-                // cerr << "Out of image." << endl;
+        break;
+
+        case EIGHT:
+        /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskEightConnected[yMask][xMask]) && (pixelValue >= value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
             }
-            else if((mask[yMask][xMask]) && (pixelValue >= value)){
-                ++neighbourCount;
-            }
-        }
-    }
+        break;
+    } 
     return neighbourCount;
 }
 

@@ -16,7 +16,8 @@ void Handler::start()
     determineTrackMask();
     determineFinishMask();
     threadGpio = thread(&Handler::readGpio, this);
-    threadSerial = thread(&Handler::displayInfo, this);
+    #warning Creates segmentation fault when trying to send data from car while data isnt there.
+    // threadSerial = thread(&Handler::displayInfo, this);
     routine();
 }
 
@@ -47,9 +48,9 @@ void Handler::routine()
 		if(raceActive){
 			mtxRoutine.lock();
 			//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
-			testbench.restartTimer();
+			// testbench.restartTimer();
 
-			//sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
+			sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
 			sample_img = *grabber.getImage();
 			cv::imwrite("Original.png", sample_img);					
 			
@@ -66,8 +67,8 @@ void Handler::routine()
 
 			gpiohandler.toggleLED(LEDGREEN);
 
-			string message = "Routine";
-			testbench.displayElapsedTime(&message);
+			// string message = "Routine";
+			// testbench.displayElapsedTime(&message);
 
 			mtxRoutine.unlock();
 		}
@@ -102,7 +103,7 @@ void Handler::readGpio()
 			determineTrackMask();
 			determineFinishMask();
 			gpiohandler.setLEDLow(LEDYELLOW);
-			
+			cout << "New TrackMask & FinishMask is created" << endl;
 		}
       	mtxGpio.unlock();
         this_thread::sleep_for(chrono::milliseconds(GPIO_THREAD_DELAY_MS));
@@ -136,14 +137,11 @@ void Handler::displayInfo()
 void Handler::determineTrackMask()
 {
 	track_img = *grabber.getImage();
-	//track_img = cv::imread("Images/inputRacetrack.png", CV_LOAD_IMAGE_GRAYSCALE);
 	dipTrackMask.setSourceImage(&track_img);
 
 	dipTrackMask.visionSet1();
 	track_img = *dipTrackMask.getEnhancedImage();
-
-	cv::imwrite("Images/RacetrackMask.png", track_img);
-	//cout << "New TrackMask & FinishMask is created" << endl;
+	cv::imwrite("TrackMask.png", track_img);
 }
 
 /**
@@ -151,13 +149,21 @@ void Handler::determineTrackMask()
  */
 void Handler::determineFinishMask()
 {
-	finish_img = cv::imread("Images/RacetrackMask.png", CV_LOAD_IMAGE_GRAYSCALE);
+	finish_img = cv::imread("TrackMask.png", CV_LOAD_IMAGE_GRAYSCALE);
+
 	dipFinishMask.setSourceImage(&finish_img);
 
 	dipFinishMask.visionSet2();	
 	finish_img = *dipFinishMask.getEnhancedImage();
+	cv::imwrite("FinishMask.png", finish_img);
 
-	cv::imwrite("FinishRacetrack.png", finish_img);
+	Classifier finishClassifier;
+	finishClassifier.setSourceImage(&finish_img);
+	finishClassifier.classifyFinish();
+
+	finish_img = *finishClassifier.getLabeldImage();
+	finish_t *finish = finishClassifier.getFinish();
+	cout << "finish label:" << int(finish->blobLabel) <<  endl;
 }
 
 /**
@@ -165,13 +171,14 @@ void Handler::determineFinishMask()
  */
 void Handler::determineCarStatus()
 {
+	coordinates *carPosition;
 	for (int i = 0; i < (int)carVector->size(); ++i)
 	{
-		coordinates *carPosition = carVector->at(i).getCoordinates();
+		carPosition = carVector->at(i).getCoordinates();
 		float lapTime = 0;	
 
 		/// Check if car is on the track.
-		if(sample_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) * track_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
+		if(track_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) == 1){
 			carVector->at(i).setOnTrack(true);
 		}
 		else{
@@ -180,12 +187,13 @@ void Handler::determineCarStatus()
 		}
 
 		/// Check if car is on at the finish.	
-		if(sample_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) * finish_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
+		if(finish_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) == 1){
 			if(carVector->at(i).getOnFinish() == false){
 				
 				/// Get lap time and restart lap timer for next lap.
 				lapTime = carVector->at(i).getLapTime();
 				carVector->at(i).restartLapTimer();
+				cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tLap time:" << lapTime << endl;
 
 				/// Add a lap.
 				carVector->at(i).setNrLaps(carVector->at(i).getNrLaps() + 1);
@@ -195,9 +203,10 @@ void Handler::determineCarStatus()
 		else{
 			carVector->at(i).setOnFinish(false);
 		}
-
-		cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "\tLap time:" << lapTime << endl;
+		// cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "\tLap time:" << lapTime << endl;
 	}
+	//carPosition = carVector->at(1).getCoordinates();
+	//cout << "Car:" << 2 << "\tSymbol:" << carVector->at(1).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")" << endl;
 }
 
 /**

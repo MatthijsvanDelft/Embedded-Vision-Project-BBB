@@ -8,6 +8,11 @@ Classifier::Classifier()
     carVector.resize(6);
 }
 
+Classifier::~Classifier()
+{
+    blobVector.clear();
+}
+
 /**
  * @brief Classifier::classifyCars
  */
@@ -15,7 +20,7 @@ void Classifier::classifyCars()
 {
     uint8_t nrBlobs = 0;
     nrBlobs = labelBlobs(src, &dst, EIGHT);
-    cout << "Number of found blobs:" << int(nrBlobs) << endl;
+    // cout << "nrBlobs: " << int(nrBlobs) << endl;
 
     /// Resize vector.
     blobVector.resize(nrBlobs);
@@ -23,41 +28,41 @@ void Classifier::classifyCars()
     blobAnalyse(&dst, nrBlobs);
 
 	for(int i=0; i < (int)nrBlobs; ++i){
-
-
-
-
-        if (blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB){
+        if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_BLOB)){
+            //cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\tNr of pixels:" << blobVector.at(i).nof_pixels << endl;
             /// CIRCLE          
             if((blobVector.at(i).invarianceMoment1 > CIRCLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < CIRCLE_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
                 carVector.at(0).setSymbol("Circle");            
-                carVector.at(0).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);            
+                carVector.at(0).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
+                // cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
             }   
             /// RECTANGLE
-            else if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(1).setSymbol("Rectangle");            
-                carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            }
-            /// TRIANGLE
-            else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(2).setSymbol("Triangle");            
-                carVector.at(2).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            }
+            // if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
+            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            //     carVector.at(1).setSymbol("Rect");            
+            //     carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            //     cout << "Blob:" <<  carVector.at(1).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            // }
+            // /// TRIANGLE
+            // else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
+            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            //     carVector.at(2).setSymbol("Triangle");            
+            //     carVector.at(2).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
+            //     cout << "Blob:" <<  carVector.at(2).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;   
+            // }
             /// MOON
-            else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(3).setSymbol("Moon");            
-                carVector.at(3).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            }
+            // else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
+            //     cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            //     carVector.at(3).setSymbol("Moon");            
+            //     carVector.at(3).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            // }
             /// PLUS
-            else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(4).setSymbol("Plus");            
-                carVector.at(4).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            }
+            // else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
+            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+            //     carVector.at(4).setSymbol("Plus");            
+            //     carVector.at(4).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
+            // }
             /// MINUS
             else if((blobVector.at(i).invarianceMoment1 > MINUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MINUS_NCM_MAX)){
                 cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
@@ -66,13 +71,45 @@ void Classifier::classifyCars()
             }
             // UNKNOWN
             else{
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
+                //cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << endl; 
             }   
         }
     }
-
-    /// Clear data for next frame.
+    /// Clear blobVector
     blobVector.clear();
+}
+
+/**
+ * @brief Classifier::classifyFinish
+ */
+void Classifier::classifyFinish(){
+
+    uint8_t nrBlobs = 0;
+    nrBlobs = labelBlobs(src, &dst, EIGHT);
+
+    /// Resize vector.
+    blobVector.resize(nrBlobs);
+
+    //blobAnalyse(&dst, nrBlobs);
+    blobAnalyseFinish(&dst, nrBlobs);
+
+    for(int i=0; i < (int)nrBlobs; ++i){
+         if((blobVector.at(i).invarianceMoment1 > FINISH_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < FINISH_NCM_MAX)){         
+            cout << "centroid:" << blobVector.at(i).xCentroid << blobVector.at(i).yCentroid << endl;   
+            // finish.blobLabel = dst.at<uint8_t>(blobVector.at(i).mostUpperPixel, blobVector.at(i).mostLeftPixel);
+            finish.blobLabel = i+1;
+            finish.invarianceMoment1 = blobVector.at(i).invarianceMoment1;
+         }
+         else{
+             cout << "invarianceMoment1:" << blobVector.at(i).invarianceMoment1 << endl;
+         }
+    }
+    
+    if (finish.blobLabel > 0)
+    {
+        threshold(&dst, &dst, finish.blobLabel, finish.blobLabel);
+    }
 }
 
 /**
@@ -91,6 +128,7 @@ uint32_t Classifier::labelBlobs(cv::Mat * src, cv::Mat * dst, uint8_t connected)
         register uint8_t pixelValue = 0;
         register uint8_t lowestNeighbour = 255;
         register uint16_t changeCount = 0;
+        uint8_t lut[255] = {0};
 
         /// Set binary image to 255.
         setSelected(src, dst, 1, 255);
@@ -146,12 +184,35 @@ uint32_t Classifier::labelBlobs(cv::Mat * src, cv::Mat * dst, uint8_t connected)
         for(y=0; y<dst->rows-1; ++y){
             for(x=0; x<dst->cols-1; ++x){
                 pixelValue = dst->at<uint8_t>(y, x);
-                if((pixelValue !=0) && (pixelValue >= blobCount)){
-                    setSelected(dst, dst, pixelValue, blobCount);
-                    ++blobCount;
-                }
+                if(pixelValue > 0)                {
+                    lut[pixelValue] = 1; 
+                }                                               
             }
         }
+
+        for(int i=0; i<255; i++){
+            if(lut[i]){
+                lut[i] = blobCount;
+                ++blobCount;
+            }
+        }
+
+        for(y=0; y<dst->rows-1; ++y){
+            for(x=0; x<dst->cols-1; ++x){
+                dst->at<uint8_t>(y, x) = lut[dst->at<uint8_t>(y, x)];                                
+            }
+        }
+
+        // blobCount=1;
+        // for(y=0; y<dst->rows-1; ++y){
+        //     for(x=0; x<dst->cols-1; ++x){
+        //         pixelValue = dst->at<uint8_t>(y, x);
+        //         if((pixelValue !=0) && (pixelValue >= blobCount)){
+        //             setSelected(dst, dst, pixelValue, blobCount);
+        //             ++blobCount;
+        //         }
+        //     }
+        // }
         return blobCount-1;
 }
 
@@ -199,18 +260,76 @@ void Classifier::blobAnalyse(cv::Mat *img, const uint8_t blobcount)
         }
     }
 
+
     ///Calculate height, width, centroid and form factor.
     for(i=0; i<blobcount; ++i){
-        blobVector.at(i).height = blobVector.at(i).mostLowerPixel - blobVector.at(i).mostUpperPixel;
-        blobVector.at(i).width = blobVector.at(i).mostRightPixel - blobVector.at(i).mostLeftPixel;
-        blobVector.at(i).xCentroid = (float)blobVector.at(i).sumX / blobVector.at(i).nof_pixels;
-        blobVector.at(i).yCentroid = (float)blobVector.at(i).sumY / blobVector.at(i).nof_pixels;
-        // blobVector.at(i).formFactor = pow(blobVector.at(i).perimeter, 2)/blobVector.at(i).nof_pixels;
+        if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_BLOB)){
+            blobVector.at(i).height = blobVector.at(i).mostLowerPixel - blobVector.at(i).mostUpperPixel;
+            blobVector.at(i).width = blobVector.at(i).mostRightPixel - blobVector.at(i).mostLeftPixel;
+            blobVector.at(i).xCentroid = (float)blobVector.at(i).sumX / blobVector.at(i).nof_pixels;
+            blobVector.at(i).yCentroid = (float)blobVector.at(i).sumY / blobVector.at(i).nof_pixels;
+            // blobVector.at(i).formFactor = pow(blobVector.at(i).perimeter, 2)/blobVector.at(i).nof_pixels;
+        }
     }
 
     /// Calculate normalized central moment for each blob.
     normalizedCentralMoments(img, blobcount);
 }
+
+/**
+ * @brief Classifier::blobAnalyseFinish
+ * @param img 
+ * @param blobcount
+ */
+void Classifier::blobAnalyseFinish(cv::Mat *img, const uint8_t blobcount)
+{
+    register uint16_t y = 0;
+    register uint16_t x = 0;
+    register uint8_t i = 0;
+    register uint8_t pixelValue = 0;
+    // register uint8_t borderingSides = 0;
+
+    /// Calculate number of pixels, highest and most left positioned pixel for each blob.
+    for(y=0; y<img->rows; ++y){
+        for(x=0; x<img->cols; ++x){
+            pixelValue = img->at<uint8_t>(y, x);
+            if((pixelValue != 0) && (pixelValue <= blobcount)){
+                blobVector.at(pixelValue-1).nof_pixels += 1;
+
+                /// Check for highest and lowest positioned pixel of a blob. 
+                if(blobVector.at(pixelValue-1).mostUpperPixel == 0) {blobVector.at(pixelValue-1).mostUpperPixel = y;}
+                if(blobVector.at(pixelValue-1).mostLowerPixel == 0) {blobVector.at(pixelValue-1).mostLowerPixel = y;}
+                else if(y > blobVector.at(pixelValue-1).mostLowerPixel) {blobVector.at(pixelValue-1).mostLowerPixel = y;}
+
+                /// Check for most left and most right positioned pixel of a blob.
+                if(blobVector.at(pixelValue-1).mostLeftPixel == 0) {blobVector.at(pixelValue-1).mostLeftPixel = x;}
+                else if(x < blobVector.at(pixelValue-1).mostLeftPixel) {blobVector.at(pixelValue-1).mostLeftPixel = x;}
+                if(blobVector.at(pixelValue-1).mostRightPixel == 0) {blobVector.at(pixelValue-1).mostRightPixel = x;}
+                else if(x > blobVector.at(pixelValue-1).mostRightPixel) {blobVector.at(pixelValue-1).mostRightPixel = x;}
+
+                /// Calculate sum of X and Y values of a blob. This is used to calculate centroid.
+                blobVector.at(pixelValue-1).sumX += pow(x, 1);
+                blobVector.at(pixelValue-1).sumY += pow(y, 1);
+            }
+        }
+    }
+
+
+    ///Calculate height, width, centroid and form factor.
+    for(i=0; i<blobcount; ++i){
+        if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_FINISH) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_FINISH)){
+            blobVector.at(i).height = blobVector.at(i).mostLowerPixel - blobVector.at(i).mostUpperPixel;
+            blobVector.at(i).width = blobVector.at(i).mostRightPixel - blobVector.at(i).mostLeftPixel;
+            blobVector.at(i).xCentroid = (float)blobVector.at(i).sumX / blobVector.at(i).nof_pixels;
+            blobVector.at(i).yCentroid = (float)blobVector.at(i).sumY / blobVector.at(i).nof_pixels;
+            // blobVector.at(i).formFactor = pow(blobVector.at(i).perimeter, 2)/blobVector.at(i).nof_pixels;
+        }
+    }
+
+    /// Calculate normalized central moment for each blob.
+    normalizedCentralMomentsFinish(img, blobcount);
+}
+
 
 /**
  * @brief Classifier::normalizedCentralMoments
@@ -230,18 +349,94 @@ void Classifier::normalizedCentralMoments(cv::Mat *img, const uint8_t blobcount)
         for(x=0; x<img->cols; ++x){
             pixelValue = img->at<uint8_t>(y, x);
             if(pixelValue != 0){
-                blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 2) * pow((y - blobVector.at(pixelValue-1).yCentroid), 0);
-                blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 0) * pow((y - blobVector.at(pixelValue-1).yCentroid), 2);
-                blobVector.at(pixelValue-1).U00 += 1;
+                if ((blobVector.at(pixelValue-1).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(pixelValue-1).nof_pixels < MAX_AREA_OF_BLOB)){
+                    blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 2) * pow((y - blobVector.at(pixelValue-1).yCentroid), 0);
+                    blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 0) * pow((y - blobVector.at(pixelValue-1).yCentroid), 2);
+                    blobVector.at(pixelValue-1).U00 += 1;
+                }
             }
         }
     }
 
     for(i=0; i<blobcount; ++i){
-        blobVector.at(i).N20 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
-        blobVector.at(i).N02 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
-        blobVector.at(i).invarianceMoment1 = blobVector.at(i).N20 + blobVector.at(i).N02;    
+        if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_BLOB)){
+            blobVector.at(i).N20 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
+            blobVector.at(i).N02 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
+            blobVector.at(i).invarianceMoment1 = blobVector.at(i).N20 + blobVector.at(i).N02;   
+        } 
     }    
+}
+
+/**
+ * @brief Classifier::normalizedCentralMomentsFinish
+ * @param img
+ * @param blobcount
+ */
+void Classifier::normalizedCentralMomentsFinish(cv::Mat *img, const uint8_t blobcount)
+{
+    register uint16_t y = 0;
+    register uint16_t x = 0;
+    register uint8_t i = 0;
+    register uint8_t pixelValue = 0;
+    register const uint8_t Y = 2;
+
+    /// Calculate central moments.
+    for(y=0; y<img->rows; ++y){
+        for(x=0; x<img->cols; ++x){
+            pixelValue = img->at<uint8_t>(y, x);
+            if(pixelValue != 0){
+                if ((blobVector.at(pixelValue-1).nof_pixels > MIN_AREA_OF_FINISH) && (blobVector.at(pixelValue-1).nof_pixels < MAX_AREA_OF_FINISH)){
+                    blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 2) * pow((y - blobVector.at(pixelValue-1).yCentroid), 0);
+                    blobVector.at(pixelValue-1).N20 += pow((x - blobVector.at(pixelValue-1).xCentroid), 0) * pow((y - blobVector.at(pixelValue-1).yCentroid), 2);
+                    blobVector.at(pixelValue-1).U00 += 1;
+                }
+            }
+        }
+    }
+
+    for(i=0; i<blobcount; ++i){
+        if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_FINISH) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_FINISH)){
+            blobVector.at(i).N20 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
+            blobVector.at(i).N02 = blobVector.at(i).N20 / pow(blobVector.at(i).U00, Y);
+            blobVector.at(i).invarianceMoment1 = blobVector.at(i).N20 + blobVector.at(i).N02;   
+        } 
+    }    
+}
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param src [description]
+ * @param dst [description]
+ * @param low [description]
+ * @param high [description]
+ */
+void Classifier::threshold(cv::Mat *src, cv::Mat *dst, uint8_t low, uint8_t high)
+{
+    register uint8_t *s = (uint8_t *)src->data;
+    register uint8_t *d = (uint8_t *)dst->data;
+    register uint32_t i = (src->rows * src->cols);
+    uint8_t lut[256];
+
+    /// Creating a look-up-table.
+    i = 0;
+    while(i < 256){
+        if((i >= low) && (i <= high)) {lut[i] = 1;}
+        else {lut[i] = 0;}
+        ++i;
+    }
+
+    /// Initialize counter.
+    i = (src->rows * src->cols);
+
+    /// Reads pixel values, if value is between high and low make it 1, else 0.
+    while(i > 0){
+        *d = lut[*s];
+        ++d;
+        ++s;
+        --i;
+    }
 }
 
 /**
@@ -283,37 +478,48 @@ uint8_t Classifier::neighbourCount(cv::Mat *img, uint16_t x, uint16_t y, uint8_t
     register uint8_t pixelValue = 0;
     register uint8_t neighbourCount = 0;
     register const uint8_t n = 3;
-    uint8_t mask[n][n] = {};
-    uint8_t maskFourConnected[n][n] = {{0, 1, 0},
-                                       {1, 0, 1},
-                                       {0, 1, 0}};
-    uint8_t maskEightConnected[n][n] = {{1, 1, 1},
-                                        {1, 0, 1},
-                                        {1, 1, 1}};
 
-    if(connected == FOUR){
-        memcpy(&mask, &maskFourConnected, sizeof(mask));
+    switch (connected) {
+        case FOUR:
+            /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskFourConnected[yMask][xMask]) && (pixelValue == value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
+            }
+        break;
 
-    }
-    else if(connected == EIGHT){
-        memcpy(&mask, &maskEightConnected, sizeof(mask));
-    }
-
-    /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; ++yMask){
-        for(xMask=0; xMask<n; ++xMask){
-            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
-            if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-                // cerr << "Out of image." << endl;
+        case EIGHT:
+        /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskEightConnected[yMask][xMask]) && (pixelValue == value)){
+                        ++neighbourCount;
+                        }
+                    }
+                }
             }
-            else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-                // cerr << "Out of image." << endl;
-            }
-            else if((mask[yMask][xMask]) && (pixelValue == value)){
-                ++neighbourCount;
-            }
-        }
-    }
+        break;
+    } 
     return neighbourCount;
 }
 
@@ -333,37 +539,48 @@ uint8_t Classifier::neighboursLowest(cv::Mat *img, uint16_t x, uint16_t y, uint8
     register uint8_t pixelValue = 0;
     register uint8_t lowestPixel = 255;
     register const uint8_t n = 3;
-    uint8_t mask[n][n] = {};
-    uint8_t maskFourConnected[n][n] = {{0, 1, 0},
-                                       {1, 0, 1},
-                                       {0, 1, 0}};
-    uint8_t maskEightConnected[n][n] = {{1, 1, 1},
-                                        {1, 0, 1},
-                                        {1, 1, 1}};
-
-    if(connected == FOUR){
-        memcpy(&mask, &maskFourConnected, sizeof(mask));
-
-    }
-    else if(connected == EIGHT){
-        memcpy(&mask, &maskEightConnected, sizeof(mask));
-    }
-
-    /// Calculate amount of neigbour pixels with value.
-    for(yMask=0; yMask<n; ++yMask){
-        for(xMask=0; xMask<n; ++xMask){
-            pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
-            if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
-                // cerr << "Out of image." << endl;
+    
+    switch (connected) {
+        case FOUR:
+            /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                    if((maskFourConnected[yMask][xMask]) && (pixelValue < lowestPixel) && (pixelValue != 0)){
+                            lowestPixel = pixelValue;
+                        }
+                    }
+                }
             }
-            else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
-                // cerr << "Out of image." << endl;
+        break;
+
+        case EIGHT:
+        /// Calculate amount of neigbour pixels with value.
+            for(yMask=0; yMask<n; ++yMask){
+                for(xMask=0; xMask<n; ++xMask){
+                    if((y+yMask-1) < 0 || (y+yMask-1) >= img->rows){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else if((x+xMask-1) < 0 || (x+xMask-1) >= img->cols){
+                        // cerr << "Out of image." << endl;
+                    }
+                    else{
+                        pixelValue = img->at<uint8_t>((y+yMask-1), (x+xMask-1));
+                        if((maskEightConnected[yMask][xMask]) && (pixelValue < lowestPixel) && (pixelValue != 0)){
+                            lowestPixel = pixelValue;
+                        }
+                    }
+                }
             }
-            else if((mask[yMask][xMask]) && (pixelValue < lowestPixel) && (pixelValue != 0)){
-                lowestPixel = pixelValue;
-            }
-        }
-    }
+        break;
+    } 
     return lowestPixel;
 }
 
@@ -380,11 +597,31 @@ void Classifier::setSourceImage(cv::Mat *im)
 }
 
 /**
+ * @brief [brief description]
+ * @details [long description]
+ * @return [description]
+ */
+cv::Mat *Classifier::getLabeldImage()
+{
+    return &dst;
+}
+
+/**
  * @brief Classifier::getCarVector
  * @return
  */
-vector<Car> * Classifier::getCarVector()
+vector<Car> *Classifier::getCarVector()
 {
     return &carVector;
+}
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * @return [description]
+ */
+finish_t *Classifier::getFinish()
+{
+    return &finish;
 }
 

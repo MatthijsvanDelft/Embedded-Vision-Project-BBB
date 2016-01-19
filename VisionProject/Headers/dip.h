@@ -42,6 +42,14 @@ private:
 
     cv::Mat *src;
     cv::Mat dst;
+
+    uint8_t maskFourConnected[3][3] = {{0, 1, 0},
+                                       {1, 0, 1},
+                                       {0, 1, 0}};
+    uint8_t maskEightConnected[3][3] = {{1, 1, 1},
+                                        {1, 0, 1},
+                                        {1, 1, 1}};
+
 };
 
 #endif // DIP_H

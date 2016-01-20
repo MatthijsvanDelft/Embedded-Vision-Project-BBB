@@ -50,10 +50,10 @@ Serial::~Serial()
  * 
  * @param msg [description]
  */
-void Serial::send(string msg)
+void Serial::send(string *msg)
 {
 	/// Send string.
-	int err = write(fd, msg.c_str(), msg.size());
+	int err = write(fd, msg->c_str(), msg->size());
 
 	/// Check for errors while sending string.
 	if(err < 0){

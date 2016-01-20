@@ -16,7 +16,7 @@
 
 #define ROUTINE_THREAD_DELAY_MS 0
 #define GPIO_THREAD_DELAY_MS 120
-#define SERIAL_THREAD_DELAY_MS 1000
+#define SERIAL_THREAD_DELAY_MS 500
 
 class Handler
 {
@@ -30,6 +30,7 @@ private:
     bool gpioThreadActive;
     bool serialThreadActive;
     bool raceActive;
+    bool dataReady;
     std::thread threadGpio;
     std::thread threadSerial;
     std::mutex mtxRoutine;
@@ -37,7 +38,7 @@ private:
     std::mutex mtxSerial;
     std::string subjectTestbench;
 
-    cv::Mat sample_img;
+    cv::Mat *sample_img;
     cv::Mat track_img;
     cv::Mat finish_img;
     std::vector<Car> *carVector;

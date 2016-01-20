@@ -49,7 +49,7 @@ void DIP::visionSet3()
     //thresholdIsoData(src, &dst, BRIGHT);
     threshold(src, &dst, 180, 255);
 	removeBorderBlobs(&dst, &dst, EIGHT);
-    setSelected(&dst, &dst, 1, 255);
+    // setSelected(&dst, &dst, 1, 255);
 }
 
 /**

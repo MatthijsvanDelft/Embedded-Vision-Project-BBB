@@ -19,56 +19,31 @@ Classifier::~Classifier()
 void Classifier::classifyCars()
 {
     uint8_t nrBlobs = 0;
+
+    /// Label blobs.
     nrBlobs = labelBlobs(src, &dst, EIGHT);
-    // cout << "nrBlobs: " << int(nrBlobs) << endl;
 
     /// Resize vector.
     blobVector.resize(nrBlobs);
 
+    /// Analyse blobs.
     blobAnalyse(&dst, nrBlobs);
 
 	for(int i=0; i < (int)nrBlobs; ++i){
         if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_BLOB)){
-            //cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\tNr of pixels:" << blobVector.at(i).nof_pixels << endl;
-            /// CIRCLE          
-            if((blobVector.at(i).invarianceMoment1 > CIRCLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < CIRCLE_NCM_MAX)){
-                // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Circle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(0).setSymbol("Circle");            
+
+            /// FIRST
+            if((blobVector.at(i).perimeter > FIRST_PERIMETER_MIN)  && (blobVector.at(i).perimeter < FIRST_PERIMETER_MAX)){
+                carVector.at(0).setSymbol("First");            
                 carVector.at(0).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
                 // cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
             }   
-            /// RECTANGLE
-            // if((blobVector.at(i).invarianceMoment1 > RECTANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < RECTANGLE_NCM_MAX)){
-            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Rectangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            //     carVector.at(1).setSymbol("Rect");            
-            //     carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            //     cout << "Blob:" <<  carVector.at(1).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            // }
-            // /// TRIANGLE
-            // else if((blobVector.at(i).invarianceMoment1 > TRIANGLE_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < TRIANGLE_NCM_MAX)){
-            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Triangle" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            //     carVector.at(2).setSymbol("Triangle");            
-            //     carVector.at(2).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
-            //     cout << "Blob:" <<  carVector.at(2).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;   
-            // }
-            /// MOON
-            // else if((blobVector.at(i).invarianceMoment1 > MOON_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MOON_NCM_MAX)){
-            //     cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Moon" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            //     carVector.at(3).setSymbol("Moon");            
-            //     carVector.at(3).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            // }
-            /// PLUS
-            // else if((blobVector.at(i).invarianceMoment1 > PLUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < PLUS_NCM_MAX)){
-            //     // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Plus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-            //     carVector.at(4).setSymbol("Plus");            
-            //     carVector.at(4).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);   
-            // }
-            /// MINUS
-            else if((blobVector.at(i).invarianceMoment1 > MINUS_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < MINUS_NCM_MAX)){
-                cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Minus" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
-                carVector.at(5).setSymbol("Minus");            
-                carVector.at(5).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
-            }
+            /// SECOND
+            else if((blobVector.at(i).perimeter > SECOND_PERIMETER_MIN)  && (blobVector.at(i).perimeter < SECOND_PERIMETER_MAX)){
+                carVector.at(1).setSymbol("Second");            
+                carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
+                // cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
+            }   
             // UNKNOWN
             else{
                 // cout << "Blob:" << i << "\tInvariance moment:" << blobVector.at(i).invarianceMoment1 << "\t symbol: Not classified" << "\t centroid:" << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;
@@ -76,6 +51,7 @@ void Classifier::classifyCars()
             }   
         }
     }
+
     /// Clear blobVector
     blobVector.clear();
 }
@@ -94,15 +70,13 @@ void Classifier::classifyFinish(){
     //blobAnalyse(&dst, nrBlobs);
     blobAnalyseFinish(&dst, nrBlobs);
 
-    for(int i=0; i < (int)nrBlobs; ++i){
-         if((blobVector.at(i).invarianceMoment1 > FINISH_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < FINISH_NCM_MAX)){         
-            cout << "centroid:" << blobVector.at(i).xCentroid << blobVector.at(i).yCentroid << endl;   
-            // finish.blobLabel = dst.at<uint8_t>(blobVector.at(i).mostUpperPixel, blobVector.at(i).mostLeftPixel);
+    for(int i=0; i<(int)nrBlobs; ++i){
+         if((blobVector.at(i).invarianceMoment1 > FINISH_NCM_MIN)  && (blobVector.at(i).invarianceMoment1 < FINISH_NCM_MAX)){          
             finish.blobLabel = i+1;
             finish.invarianceMoment1 = blobVector.at(i).invarianceMoment1;
          }
          else{
-             cout << "invarianceMoment1:" << blobVector.at(i).invarianceMoment1 << endl;
+             cout << "invarianceMoment1:" << blobVector.at(i).invarianceMoment1 << "\tNumber of pixels:" << blobVector.at(i).nof_pixels << endl;
          }
     }
     
@@ -202,17 +176,6 @@ uint32_t Classifier::labelBlobs(cv::Mat * src, cv::Mat * dst, uint8_t connected)
                 dst->at<uint8_t>(y, x) = lut[dst->at<uint8_t>(y, x)];                                
             }
         }
-
-        // blobCount=1;
-        // for(y=0; y<dst->rows-1; ++y){
-        //     for(x=0; x<dst->cols-1; ++x){
-        //         pixelValue = dst->at<uint8_t>(y, x);
-        //         if((pixelValue !=0) && (pixelValue >= blobCount)){
-        //             setSelected(dst, dst, pixelValue, blobCount);
-        //             ++blobCount;
-        //         }
-        //     }
-        // }
         return blobCount-1;
 }
 
@@ -227,7 +190,7 @@ void Classifier::blobAnalyse(cv::Mat *img, const uint8_t blobcount)
     register uint16_t x = 0;
     register uint8_t i = 0;
     register uint8_t pixelValue = 0;
-    // register uint8_t borderingSides = 0;
+    register uint8_t borderingSides = 0;
 
     /// Calculate number of pixels, highest and most left positioned pixel for each blob.
     for(y=0; y<img->rows; ++y){
@@ -248,10 +211,10 @@ void Classifier::blobAnalyse(cv::Mat *img, const uint8_t blobcount)
                 else if(x > blobVector.at(pixelValue-1).mostRightPixel) {blobVector.at(pixelValue-1).mostRightPixel = x;}
 
                 /// Calculate perimeter.
-                // borderingSides = neighbourCount(img, x, y, 0, FOUR) - 4;
-                // if(borderingSides == 1) {blobVector.at(pixelValue-1).perimeter += 1;}
-                // else if(borderingSides == 2) {blobVector.at(pixelValue-1).perimeter += sqrt(2);}
-                // else if(borderingSides == 3) {blobVector.at(pixelValue-1).perimeter += sqrt(5);}
+                borderingSides = neighbourCount(img, x, y, 0, FOUR);
+                if(borderingSides == 1) {blobVector.at(pixelValue-1).perimeter += 1;}
+                else if(borderingSides == 2) {blobVector.at(pixelValue-1).perimeter += sqrt(2);}
+                else if(borderingSides == 3) {blobVector.at(pixelValue-1).perimeter += sqrt(5);}
 
                 /// Calculate sum of X and Y values of a blob. This is used to calculate centroid.
                 blobVector.at(pixelValue-1).sumX += pow(x, 1);
@@ -273,7 +236,7 @@ void Classifier::blobAnalyse(cv::Mat *img, const uint8_t blobcount)
     }
 
     /// Calculate normalized central moment for each blob.
-    normalizedCentralMoments(img, blobcount);
+    //normalizedCentralMoments(img, blobcount);
 }
 
 /**

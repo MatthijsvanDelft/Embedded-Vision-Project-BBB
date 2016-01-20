@@ -20,7 +20,7 @@ class Serial
 public:
     Serial();
     ~Serial();
-    void send(std::string msg);
+    void send(std::string *msg);
     void receive();
 
 private:

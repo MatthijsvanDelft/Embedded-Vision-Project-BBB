@@ -9,9 +9,10 @@ using namespace chrono;
 /**
  * @brief Car::Car
  */
-Car::Car() : lapDuration(0.0), nrRank(0), nrLaps(0), nrTeam(0), onFinish(true), onTrack(true)
+Car::Car() : lapDuration(0.0), nrRank(0), nrLaps(0), nrTeam(0), onFinish(true), onTrack(true), dsqStatus(false)
 {
-
+    posCoor.xCoordinate = 0;
+    posCoor.yCoordinate = 0;
 }
 
 /**
@@ -36,9 +37,17 @@ void Car::displayLapTime(string *msg)
     std::stringstream ss;    
     lapDuration = duration_cast<nanoseconds>(endTime - beginTime);
 
-    /// Scales time in ns to ms and prints to standart out.
     ss << "Message: " << *msg << "\tPassed time: " << lapDuration.count()*MILLI_SCALEFACTOR << "ms";
     cout << "test" << ss.str() << endl;
+
+    /// Scales time in ns to ms and prints to standart out.
+    // if(lapDuration != 0){
+    //     ss << "Message: " << *msg << "\tPassed time: " << lapDuration.count()*MILLI_SCALEFACTOR << "ms";
+    //     cout << "test" << ss.str() << endl;
+    // }
+    // else{
+    //     cout << "First lap started" << endl;
+    // }
 }
 
 /**

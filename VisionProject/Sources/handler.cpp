@@ -16,8 +16,7 @@ void Handler::start()
     determineTrackMask();
     determineFinishMask();
     threadGpio = thread(&Handler::readGpio, this);
-    #warning Creates segmentation fault when trying to send data from car while data isnt there.
-    // threadSerial = thread(&Handler::displayInfo, this);
+    threadSerial = thread(&Handler::displayInfo, this);
     routine();
 }
 
@@ -50,24 +49,24 @@ void Handler::routine()
 			//cout << "Routine" << "\tthread id:" << this_thread::get_id() << endl;
 			// testbench.restartTimer();
 
-			sample_img = cv::imread("Images/test1.png", CV_LOAD_IMAGE_GRAYSCALE);
-			sample_img = *grabber.getImage();
-			cv::imwrite("Original.png", sample_img);					
+			sample_img = grabber.getImage();
+			cv::imwrite("Original.png", *sample_img);					
 			
-			dip.setSourceImage(&sample_img);
+			dip.setSourceImage(sample_img);
 			dip.visionSet3();
-			sample_img = *dip.getEnhancedImage();
-			cv::imwrite("Enhanced.png", sample_img);							
+			sample_img = dip.getEnhancedImage();
+			cv::imwrite("Enhanced.png", *sample_img);							
 
-			classifier.setSourceImage(&sample_img);
+			classifier.setSourceImage(sample_img);
 			classifier.classifyCars();
 			carVector = classifier.getCarVector();
+			dataReady = true;
 
 			determineCarStatus();
 
 			gpiohandler.toggleLED(LEDGREEN);
 
-			// string message = "Routine";
+			string message = "Routine";
 			// testbench.displayElapsedTime(&message);
 
 			mtxRoutine.unlock();
@@ -102,8 +101,7 @@ void Handler::readGpio()
 			gpiohandler.setLEDHigh(LEDYELLOW);
 			determineTrackMask();
 			determineFinishMask();
-			gpiohandler.setLEDLow(LEDYELLOW);
-			cout << "New TrackMask & FinishMask is created" << endl;
+			gpiohandler.setLEDLow(LEDYELLOW);			
 		}
       	mtxGpio.unlock();
         this_thread::sleep_for(chrono::milliseconds(GPIO_THREAD_DELAY_MS));
@@ -115,14 +113,20 @@ void Handler::readGpio()
  */
 void Handler::displayInfo()
 {
+	coordinates *carPosition;
+	string jsonInfo;
+
     while(serialThreadActive){
-    	if(raceActive){
+    	if(dataReady){
 	        mtxSerial.lock();
 	        // cout << "Display info" << "\tthread id:" << this_thread::get_id() << endl;
 
-	        for(int i=0; i<(int)carVector->size(); i++){
-				string jsonInfo = carToJSON(&(carVector->at(i)));
-				serial.send(jsonInfo);
+	        for(int i=0; i<(int)carVector->size(); ++i){	        
+				carPosition = carVector->at(i).getCoordinates();
+	        	if ((carPosition->xCoordinate != 0) && (carPosition->yCoordinate != 0)){
+					jsonInfo = carToJSON(&(carVector->at(i)));
+					serial.send(&jsonInfo);
+	        	}
 	        }
 
 	        mtxSerial.unlock();
@@ -138,10 +142,12 @@ void Handler::determineTrackMask()
 {
 	track_img = *grabber.getImage();
 	dipTrackMask.setSourceImage(&track_img);
-
 	dipTrackMask.visionSet1();
 	track_img = *dipTrackMask.getEnhancedImage();
+
 	cv::imwrite("TrackMask.png", track_img);
+
+	cout << "Track mask is created succesfully" << endl;
 }
 
 /**
@@ -163,7 +169,15 @@ void Handler::determineFinishMask()
 
 	finish_img = *finishClassifier.getLabeldImage();
 	finish_t *finish = finishClassifier.getFinish();
-	cout << "finish label:" << int(finish->blobLabel) <<  endl;
+	cout << "finish label:" << int(finish->blobLabel) << "\tinvarianceMoment1:" << finish->invarianceMoment1 <<  endl;
+	
+	/// Check is finish label is not zero.
+	if (int(finish->blobLabel)){
+		cout << "Finish mask is created succesfully" << endl;
+	}
+	else{
+		cerr << "Finish mask is not created" <<  endl;
+	}
 }
 
 /**
@@ -178,7 +192,7 @@ void Handler::determineCarStatus()
 		float lapTime = 0;	
 
 		/// Check if car is on the track.
-		if(track_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate) == 1){
+		if(track_img.at<uint8_t>(carPosition->yCoordinate, carPosition->xCoordinate)){
 			carVector->at(i).setOnTrack(true);
 		}
 		else{
@@ -205,8 +219,6 @@ void Handler::determineCarStatus()
 		}
 		// cout << "Car:" << i+1 << "\tSymbol:" << carVector->at(i).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")"  << "\tOn track:" << carVector->at(i).getOnTrack() << "\tOn finish:" << carVector->at(i).getOnFinish() << "\tLap time:" << lapTime << endl;
 	}
-	//carPosition = carVector->at(1).getCoordinates();
-	//cout << "Car:" << 2 << "\tSymbol:" << carVector->at(1).getSymbol() << "\tCentoid:(" << carPosition->xCoordinate << "," << carPosition->yCoordinate << ")" << endl;
 }
 
 /**
@@ -232,8 +244,8 @@ string Handler::carToJSON(Car *car)
 	coordinates *coors = car->getCoordinates();
 
 	/// Create JSON string.
-	ssJsonInfo << "{\"team\":\"" << car->getTeam() << "\"," ;
-	ssJsonInfo << "\"symbol\":\"" << car->getSymbol() << "\"," ;
+	// ssJsonInfo << "{\"team\":\"" << car->getTeam() << "\"," ;
+	ssJsonInfo << "{\"symbol\":\"" << car->getSymbol() << "\"," ;
 	ssJsonInfo << "\"rank\":\"" << car->getNrRank() << "\"," ;
 	ssJsonInfo << "\"laps\":\"" << car->getNrLaps() << "\"," ;
 	ssJsonInfo << "\"coordinate x\":\"" << coors->xCoordinate << "\"," ;
@@ -241,8 +253,7 @@ string Handler::carToJSON(Car *car)
 	ssJsonInfo << "\"lap time\":\"" << car->getLapTime() << "\"," ;
 	ssJsonInfo << "\"on finish\":\"" << car->getOnFinish() << "\"," ;
 	ssJsonInfo << "\"on track\":\"" << car->getOnTrack() << "\"," ;
-	ssJsonInfo << "\"disqualification\":\"" << car->getDsqStatus() << "\"}" ;
-	ssJsonInfo << endl;
+	ssJsonInfo << "\"disqualification\":\"" << car->getDsqStatus() << "\"}\n" ;
 
 	return ssJsonInfo.str();
 }

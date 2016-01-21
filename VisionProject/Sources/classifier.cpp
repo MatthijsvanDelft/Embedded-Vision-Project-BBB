@@ -30,19 +30,20 @@ void Classifier::classifyCars()
     blobAnalyse(&dst, nrBlobs);
 
 	for(int i=0; i < (int)nrBlobs; ++i){
+        // cout << "Nr of pixels " << blobVector.at(i).nof_pixels << " Perimeter: " << blobVector.at(i).perimeter << endl;
         if ((blobVector.at(i).nof_pixels > MIN_AREA_OF_BLOB) && (blobVector.at(i).nof_pixels < MAX_AREA_OF_BLOB)){
 
             /// FIRST
             if((blobVector.at(i).perimeter > FIRST_PERIMETER_MIN)  && (blobVector.at(i).perimeter < FIRST_PERIMETER_MAX)){
                 carVector.at(0).setSymbol("First");            
                 carVector.at(0).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
-                // cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
+                cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
             }   
             /// SECOND
             else if((blobVector.at(i).perimeter > SECOND_PERIMETER_MIN)  && (blobVector.at(i).perimeter < SECOND_PERIMETER_MAX)){
                 carVector.at(1).setSymbol("Second");            
                 carVector.at(1).setCoordinates(blobVector.at(i).xCentroid, blobVector.at(i).yCentroid);
-                // cout << "Blob:" <<  carVector.at(0).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
+                cout << "Blob:" <<  carVector.at(1).getSymbol() << "\tCoordinate: " << blobVector.at(i).xCentroid << "," << blobVector.at(i).yCentroid << endl;          
             }   
             // UNKNOWN
             else{
